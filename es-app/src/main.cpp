@@ -28,6 +28,7 @@
 #include "NetworkThread.h"
 #include "RecalboxSystem.h"
 #include "FileSorts.h"
+#include <csignal>
 
 
 #ifdef WIN32
@@ -39,6 +40,8 @@ namespace fs = boost::filesystem;
 bool scrape_cmdline = false;
 
 void playSound(std::string name);
+
+Window window;
 
 bool parseArgs(int argc, char* argv[], unsigned int* width, unsigned int* height)
 {
@@ -207,6 +210,24 @@ int setLocale(char * argv1)
     return 0;
 }
 
+void signalHandler( int signum ) {
+	printf ("Signal: %i\n", signum);
+	Window* esWindow = &window;
+    if(signum == SIGUSR1) {
+        AudioManager::getInstance()->deinit();
+        VolumeControl::getInstance()->deinit();
+        esWindow->deinit();
+    }
+    if (signum == SIGUSR2) {
+        esWindow->init();
+        VolumeControl::getInstance()->init();
+        AudioManager::getInstance()->init();
+        esWindow->normalizeNextUpdate();
+    }
+
+	printf ("Signal treated\n");
+}
+
 int main(int argc, char* argv[])
 {
 	unsigned int width = 0;
@@ -268,9 +289,13 @@ int main(int argc, char* argv[])
 	// other init
 	FileSorts::init(); // require locale
 	initMetadata(); // require locale
+
+	// Signal handler
+	signal(SIGUSR1, signalHandler); 
+	signal(SIGUSR2, signalHandler);
 	
     Renderer::init(width, height);
-	Window window;
+	//Window window;
 	ViewController::init(&window);
 	window.pushGui(ViewController::get());
 
