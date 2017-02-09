@@ -934,6 +934,12 @@ GuiMenu::GuiMenu(Window *window) : GuiComponent(window), mMenu(window, _("MAIN M
                          Settings::getInstance()->setBool("DrawFramerate", framerate->getState());
                      });
 
+                     // maximum vram
+                     auto max_vram = std::make_shared<SliderComponent>(mWindow, 0.f, 1000.f, 10.f, "Mb");
+                     max_vram->setValue((float)(Settings::getInstance()->getInt("MaxVRAM")));
+                     s->addWithLabel("VRAM LIMIT", max_vram);
+                     s->addSaveFunc([max_vram] { Settings::getInstance()->setInt("MaxVRAM", (int)round(max_vram->getValue())); });
+
                      // Recalbox Manager
                      auto manager = std::make_shared<SwitchComponent>(mWindow, RecalboxConf::getInstance()->get(
                              "system.manager.enabled") == "1");
