@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- Fix Inception bug in MataData emulator gui
+
+## [18.03.16]
 ### Added
 - Added scan music subfolders
 - Added icons in quick menu

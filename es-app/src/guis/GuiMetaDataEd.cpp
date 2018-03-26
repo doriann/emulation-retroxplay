@@ -124,7 +124,7 @@ GuiMetaDataEd::GuiMetaDataEd(Window *window, MetaDataList *md, const std::vector
             case MD_LIST:
                 //UGLY
                 if (iter->key == "emulator") {
-                    auto emu_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, "emulator", false,FONT_SIZE_SMALL);
+                    auto emu_choice = std::make_shared<OptionListComponent<std::string>>(mWindow, "emulator", false, FONT_SIZE_SMALL);
                     row.addElement(emu_choice, false);
                     bool selected = false;
                     for (auto it = system->getEmulators()->begin(); it != system->getEmulators()->end(); it++) {
@@ -133,11 +133,6 @@ GuiMetaDataEd::GuiMetaDataEd(Window *window, MetaDataList *md, const std::vector
                     }
                     emu_choice->add("default", "default", !selected);
                     ed = emu_choice;
-                    emu_choice->setSelectedChangedCallback([this, header, system, main](std::string s) {
-                        mMetaData->set("emulator", s);
-                        mWindow->pushGui(new GuiMetaDataEd(mWindow, mMetaData, mMetaDataDecl, mScraperParams, header, mSavedCallback, mDeleteFunc, system, main));
-                        delete this;
-                    });
                 }
 
                 if (iter->key == "core") {
