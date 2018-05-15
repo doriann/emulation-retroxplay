@@ -1,7 +1,4 @@
 #include "Log.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
 #include "platform.h"
 
 LogLevel Log::reportingLevel = LogInfo;

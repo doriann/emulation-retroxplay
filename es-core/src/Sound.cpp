@@ -1,8 +1,6 @@
 #include "Sound.h"
 #include "AudioManager.h"
 #include "Log.h"
-#include "Settings.h"
-#include "ThemeData.h"
 
 std::map< std::string, std::shared_ptr<Sound> > Sound::sMap;
 

@@ -7,27 +7,21 @@
 #include "Renderer.h"
 #include "views/ViewController.h"
 #include "SystemData.h"
-#include <boost/filesystem.hpp>
 #include "guis/GuiDetectDevice.h"
 #include "guis/GuiMsgBox.h"
 #include "guis/GuiMsgBoxScroll.h"
 #include "AudioManager.h"
-#include "platform.h"
 #include "Log.h"
-#include "Window.h"
 #include "EmulationStation.h"
 #include "recalbox/RecalboxSystem.h"
 #include "Settings.h"
 #include "ScraperCmdLine.h"
 #include "VolumeControl.h"
-#include <sstream>
 #include "Locale.h"
 #include <boost/algorithm/string.hpp>
 #include <RecalboxConf.h>
 #include <recalbox/RecalboxUpgrade.h>
-#include "resources/Font.h"
 #include "NetworkThread.h"
-#include "recalbox/RecalboxSystem.h"
 #include "FileSorts.h"
 #include "CommandThread.h"
 
@@ -175,20 +169,20 @@ void onExit()
 
 int setLocale(char * argv1)
 {
- 	char path_save[PATH_MAX];
-  	char abs_exe_path[PATH_MAX];
+ 	char abs_exe_path[PATH_MAX];
   	char *p;
 
     if(!(p = strrchr(argv1, '/'))) {
-    		char * res = getcwd(abs_exe_path, sizeof(abs_exe_path));
+		char * res = getcwd(abs_exe_path, sizeof(abs_exe_path));
     }
   	else
   	{
-    		*p = '\0';
-			char * res = getcwd(path_save, sizeof(path_save));
-    		int chdirres = chdir(argv1);
-    		res = getcwd(abs_exe_path, sizeof(abs_exe_path));
-			chdirres = chdir(path_save);
+		char path_save[PATH_MAX];
+		*p = '\0';
+		char * res = getcwd(path_save, sizeof(path_save));
+		int chdirres = chdir(argv1);
+		res = getcwd(abs_exe_path, sizeof(abs_exe_path));
+		chdirres = chdir(path_save);
   	}
 	boost::locale::localization_backend_manager my = boost::locale::localization_backend_manager::global(); 
 	// Get global backend

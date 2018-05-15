@@ -1,14 +1,11 @@
 #include <Log.h>
 #include <RecalboxConf.h>
 #include "views/gamelist/ISimpleGameListView.h"
-#include "ThemeData.h"
 #include "SystemData.h"
-#include "Window.h"
 #include "views/ViewController.h"
 #include "Sound.h"
 #include "Settings.h"
 #include "Gamelist.h"
-#include "Locale.h"
 
 ISimpleGameListView::ISimpleGameListView(Window* window, FileData* root) : IGameListView(window, root),
 mHeaderText(window), mHeaderImage(window), mBackground(window), mThemeExtras(window), mFavoriteChange(false)
@@ -70,14 +67,14 @@ void ISimpleGameListView::onFileChanged(FileData* file, FileChangeType change)
 {
 	// we could be tricky here to be efficient;
 	// but this shouldn't happen very often so we'll just always repopulate
-	FileData* cursor = getCursor();
 	int index = getCursorIndex();
 	populateList(getRoot()->getChildren());
 	setCursorIndex(index);
+	bool tobedeleted = false;
 
     if(change == FileChangeType::FILE_REMOVED) {
         bool favorite = file->metadata.get("favorite") == "true";
-        delete file;
+        tobedeleted = true;
         if (favorite) {
             ViewController::get()->setInvalidGamesList(SystemData::getFavoriteSystem());
             ViewController::get()->getSystemListView()->manageFavorite();
@@ -109,6 +106,8 @@ void ISimpleGameListView::onFileChanged(FileData* file, FileChangeType change)
 			ViewController::get()->getSystemListView()->manageFavorite();
 		}
 	}
+	if (tobedeleted)
+		delete file;
 }
 
 bool ISimpleGameListView::input(InputConfig* config, Input input)

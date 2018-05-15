@@ -1,5 +1,4 @@
 #include "Util.h"
-#include "resources/ResourceManager.h"
 #include "platform.h"
 #include "Locale.h"
 

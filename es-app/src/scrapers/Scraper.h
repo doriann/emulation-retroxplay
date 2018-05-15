@@ -58,7 +58,7 @@ struct ScraperSearchResult
 class ScraperRequest : public AsyncHandle
 {
 public:
-	ScraperRequest(std::vector<ScraperSearchResult>& resultsWrite);
+	explicit ScraperRequest(std::vector<ScraperSearchResult>& resultsWrite);
 
 	// returns "true" once we're done
 	virtual void update() = 0;

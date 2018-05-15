@@ -20,7 +20,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <boost/algorithm/string/replace.hpp>
-#include <fstream>
 #include <Locale.h>
 
 
@@ -58,10 +57,9 @@ std::string RecalboxSystem::getFreeSpaceInfo() {
             unsigned long total = (fiData.f_blocks * (fiData.f_bsize / 1024)) / (1024L * 1024L);
             unsigned long free = (fiData.f_bfree * (fiData.f_bsize / 1024)) / (1024L * 1024L);
             unsigned long used = total - free;
-            unsigned long percent = 0;
             std::ostringstream oss;
             if (total != 0) {  //for small SD card ;) with share < 1GB
-                percent = used * 100 / total;
+				unsigned long percent = used * 100 / total;
                 oss << used << "GB/" << total << "GB (" << percent << "%)";
             } else
                 oss << "N/A";
@@ -384,6 +382,8 @@ std::vector<std::string> *RecalboxSystem::scanBluetooth() {
     char line[1024];
 
     if (pipe == NULL) {
+		pclose(pipe);
+		delete res;
         return NULL;
     }
 

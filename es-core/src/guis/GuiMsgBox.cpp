@@ -3,9 +3,6 @@
 #include "components/TextComponent.h"
 #include "components/ButtonComponent.h"
 #include "components/MenuComponent.h" // for makeButtonGrid
-#include "Util.h"
-#include "Log.h"
-#include "MenuThemeData.h"
 
 #define HORIZONTAL_PADDING_PX 20
 

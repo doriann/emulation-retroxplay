@@ -75,7 +75,7 @@ ThemeException& operator<<(ThemeException& e, T appendMsg)
 class ThemeExtras : public GuiComponent
 {
 public:
-	ThemeExtras(Window* window) : GuiComponent(window) {};
+	explicit ThemeExtras(Window* window) : GuiComponent(window) {};
 	virtual ~ThemeExtras();
 
 	// will take ownership of the components within extras (delete them in destructor or when setExtras is called again)
@@ -131,7 +131,7 @@ public:
 	ThemeData();
 
 	// throws ThemeException
-	void loadFile(const std::string systemThemeFolder, const std::string& path);
+	void loadFile(const std::string& systemThemeFolder, const std::string& path);
 
 	enum ElementPropertyType
 	{

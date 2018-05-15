@@ -1,7 +1,6 @@
 #include "components/DateTimeComponent.h"
 #include "Renderer.h"
 #include "Window.h"
-#include "Log.h"
 #include "Util.h"
 #include "Locale.h"
 #include "MenuThemeData.h"
@@ -197,8 +196,6 @@ DateTimeComponent::DisplayMode DateTimeComponent::getCurrentDisplayMode() const
 std::string DateTimeComponent::getDisplayString(DisplayMode mode) const
 {
 	std::string fmt;
-	char strbuf[256];
-	int n;
 
 	switch(mode)
 	{
@@ -228,6 +225,10 @@ std::string DateTimeComponent::getDisplayString(DisplayMode mode) const
 		{
 			//relative time
 			using namespace boost::posix_time;
+
+			char strbuf[256];
+
+			int n;
 
 			if(mTime == not_a_date_time)
 			  return _("never");

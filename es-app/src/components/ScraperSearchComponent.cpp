@@ -6,9 +6,7 @@
 #include "components/ImageComponent.h"
 #include "components/RatingComponent.h"
 #include "components/DateTimeComponent.h"
-#include "components/AnimatedImageComponent.h"
 #include "components/ComponentList.h"
-#include "HttpReq.h"
 #include "Settings.h"
 #include "Log.h"
 #include "Util.h"
@@ -138,7 +136,6 @@ void ScraperSearchComponent::resizeMetadata()
 	if(mMD_Grid->getSize().y() > mMD_Pairs.size())
 	{
 		auto menuTheme = MenuThemeData::getInstance()->getCurrentTheme();
-		const int fontHeight = (int)(mMD_Grid->getSize().y() / mMD_Pairs.size() * 0.8f);
 		auto fontLbl = menuTheme->menuTextSmall.font;
 		auto fontComp = menuTheme->menuTextSmall.font;
 

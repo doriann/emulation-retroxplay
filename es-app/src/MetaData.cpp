@@ -2,7 +2,6 @@
 #include "components/TextComponent.h"
 #include "Log.h"
 #include "Util.h"
-#include <strings.h>
 #include "Locale.h"
 
 namespace fs = boost::filesystem;

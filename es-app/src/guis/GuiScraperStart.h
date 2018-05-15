@@ -19,7 +19,7 @@ class SwitchComponent;
 class GuiScraperStart : public GuiComponent
 {
 public:
-	GuiScraperStart(Window* window);
+	explicit GuiScraperStart(Window* window);
 
 	bool input(InputConfig* config, Input input) override;
 

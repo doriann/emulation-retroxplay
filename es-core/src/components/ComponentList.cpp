@@ -2,7 +2,6 @@
 #include <Settings.h>
 #include "components/ComponentList.h"
 #include "Util.h"
-#include "Log.h"
 #include "Locale.h"
 #include "MenuThemeData.h"
 
@@ -197,11 +196,10 @@ void ComponentList::render(const Eigen::Affine3f& parentTrans)
 
 	// draw our entries
 	std::vector<GuiComponent*> drawAfterCursor;
-	bool drawAll;
 	for(unsigned int i = 0; i < mEntries.size(); i++)
 	{
 		auto& entry = mEntries.at(i);
-		drawAll = !mFocused || i != mCursor;
+		bool drawAll = !mFocused || i != mCursor;
 		for(auto it = entry.data.elements.begin(); it != entry.data.elements.end(); it++)
 		{
 			if(drawAll || it->invert_when_selected)

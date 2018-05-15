@@ -11,9 +11,7 @@
 class StrInputConfig
 {
  public:
-  StrInputConfig(std::string ideviceName, std::string ideviceGUIDString) {
-    deviceName = ideviceName;
-    deviceGUIDString = ideviceGUIDString;
+  StrInputConfig(std::string ideviceName, std::string ideviceGUIDString) : deviceGUIDString(ideviceGUIDString), deviceName(ideviceName){
   }
 
   std::string deviceName;
@@ -23,7 +21,7 @@ class StrInputConfig
 class GuiMenu : public GuiComponent
 {
 public:
-	GuiMenu(Window* window);
+	explicit GuiMenu(Window* window);
 	~GuiMenu();
 
 	bool input(InputConfig* config, Input input) override;
@@ -31,10 +29,10 @@ public:
 	std::vector<HelpPrompt> getHelpPrompts() override;
 
 private:
-	void addEntry(const char* name, unsigned int color, bool add_arrow, const std::function<void()>& func, const std::string iconName = "");
-	void addEntryWithHelp(const char* name, const std::string help, unsigned int color, bool add_arrow, const std::function<void()>& func, const std::string iconName = "");
+	void addEntry(const char* name, unsigned int color, bool add_arrow, const std::function<void()>& func, const std::string& iconName = "");
+	void addEntryWithHelp(const char* name, const std::string& help, unsigned int color, bool add_arrow, const std::function<void()>& func, const std::string& iconName = "");
 
-	void createInputTextRow(GuiSettings * gui, std::string title, const char* settingsID, bool password, std::string help);
+	void createInputTextRow(GuiSettings * gui, std::string title, const char* settingsID, bool password, std::string help = "");
 	void menuSystem();
 	void menuUpdates();
 	void menuGameSettings();

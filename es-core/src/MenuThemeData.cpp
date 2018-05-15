@@ -1,8 +1,5 @@
 #include "MenuThemeData.h"
 #include "Settings.h"
-#include "ThemeData.h"
-#include "Renderer.h"
-#include "resources/Font.h"
 
 std::shared_ptr<MenuThemeData> MenuThemeData::sInstance = NULL;
 
@@ -12,9 +9,7 @@ std::shared_ptr<MenuThemeData> MenuThemeData::getInstance() {
 	return sInstance;
 }
 
-MenuThemeData::MenuThemeData(){
-	
-	mCurrent = std::shared_ptr<MenuTheme>(new MenuTheme);
+MenuThemeData::MenuThemeData() : mCurrent(std::shared_ptr<MenuTheme>(new MenuTheme)){
 	
 	auto elem = ThemeData::getCurrent()->getElement("menu", "menubg", "menuBackground");
 	

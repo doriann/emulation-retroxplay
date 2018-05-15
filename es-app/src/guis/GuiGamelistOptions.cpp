@@ -1,12 +1,8 @@
 #include <RecalboxConf.h>
 #include "GuiGamelistOptions.h"
 #include "GuiMetaDataEd.h"
-#include "Settings.h"
 #include "views/gamelist/IGameListView.h"
 #include "views/ViewController.h"
-#include "components/SwitchComponent.h"
-#include "guis/GuiSettings.h"
-#include "Locale.h"
 #include "MenuMessages.h"
 
 GuiGamelistOptions::GuiGamelistOptions(Window* window, SystemData* system) : GuiComponent(window), 
@@ -98,7 +94,6 @@ GuiGamelistOptions::~GuiGamelistOptions()
         }
     }else {
         Window *window = mWindow;
-        int size = getGamelist()->getRoot()->getChildren().size();
         if (getGamelist()->getRoot()->getChildren().size() == 0) {
             ViewController::get()->goToStart();
 			window->renderShutdownScreen();

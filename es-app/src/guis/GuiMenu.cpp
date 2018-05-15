@@ -1,21 +1,17 @@
 #include <list>
 #include <algorithm>
-#include <string>
 #include <sstream>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/format.hpp>
 
-#include <functional>
 #include <LibretroRatio.h>
 #include <guis/GuiMsgBoxScroll.h>
 
 #include "EmulationStation.h"
 #include "guis/GuiMenu.h"
-#include "Window.h"
 #include "Sound.h"
-#include "Settings.h"
 #include "recalbox/RecalboxSystem.h"
 #include "recalbox/RecalboxUpgrade.h"
 #include "guis/GuiMsgBox.h"
@@ -27,9 +23,6 @@
 
 #include "components/SwitchComponent.h"
 #include "components/SliderComponent.h"
-#include "components/TextComponent.h"
-#include "components/OptionListComponent.h"
-#include "components/MenuComponent.h"
 #include "VolumeControl.h"
 
 #include "guis/GuiTextEditPopup.h"
@@ -39,7 +32,6 @@
 #include "RecalboxConf.h"
 #include "MenuMessages.h"
 
-#include "MenuThemeData.h"
 #include "animations/LambdaAnimation.h"
 
 GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, _("MAIN MENU").c_str()), mVersion(window) {
@@ -152,7 +144,7 @@ GuiMenu::~GuiMenu() {
     clearLoadedInput();
 }
 
-void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char *settingsID, bool password, std::string help = "") {
+void GuiMenu::createInputTextRow(GuiSettings *gui, std::string title, const char *settingsID, bool password, std::string help) {
 	// LABEL
 	Window *window = mWindow;
 	ComponentListRow row;
@@ -1096,8 +1088,7 @@ void GuiMenu::menuNetworkSettings(){
 	s->addWithLabel(enable_wifi, _("ENABLE WIFI"), _(MenuMessages::NETWORK_WIFI_HELP_MSG));
 
 	//SSID
-	std::string baseSSID = RecalboxConf::getInstance()->get("wifi.ssid");
-	auto WifiSSID = [this, baseSSID, enable_wifi, baseEnabled] (GuiSettings *gui, std::string title, 
+	auto WifiSSID = [this, enable_wifi, baseEnabled] (GuiSettings *gui, std::string title,
 			std::string value, std::string help = "") {
 		
 		ComponentListRow row;
@@ -1188,6 +1179,7 @@ void GuiMenu::menuNetworkSettings(){
 		}
 		gui->addRow(row);
 	};
+	std::string baseSSID = RecalboxConf::getInstance()->get("wifi.ssid");
 	WifiSSID(s, _("WIFI SSID"), baseSSID, _(MenuMessages::NETWORK_SSID_HELP_MSG));
 
 	const std::string baseKEY = RecalboxConf::getInstance()->get("wifi.key");
@@ -1662,7 +1654,7 @@ void GuiMenu::onSizeChanged() {
     mVersion.setPosition(0, mSize.y() - mVersion.getSize().y());
 }
 
-void GuiMenu::addEntryWithHelp(const char *name, const std::string help, unsigned int color, bool add_arrow, const std::function<void()> &func, const std::string iconName) {
+void GuiMenu::addEntryWithHelp(const char *name, const std::string &help, unsigned int color, bool add_arrow, const std::function<void()> &func, const std::string &iconName) {
 
 	auto menuTheme = MenuThemeData::getInstance()->getCurrentTheme();
 	std::shared_ptr<Font> font = menuTheme->menuText.font;
@@ -1696,7 +1688,7 @@ void GuiMenu::addEntryWithHelp(const char *name, const std::string help, unsigne
     mMenu.addRowWithHelp(row, name, help);
 }
 
-void GuiMenu::addEntry(const char *name, unsigned int color, bool add_arrow, const std::function<void()> &func, const std::string iconName) {
+void GuiMenu::addEntry(const char *name, unsigned int color, bool add_arrow, const std::function<void()> &func, const std::string &iconName) {
     addEntryWithHelp(name, "", color, add_arrow, func, iconName);
 }
 

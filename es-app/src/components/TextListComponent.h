@@ -38,7 +38,7 @@ public:
 	using IList<TextListData, T>::isScrolling;
 	using IList<TextListData, T>::stopScrolling;
 
-	TextListComponent(Window* window);
+	explicit TextListComponent(Window* window);
 	
 	bool input(InputConfig* config, Input input) override;
 	void update(int deltaTime) override;
@@ -114,15 +114,13 @@ private:
 
 template <typename T>
 TextListComponent<T>::TextListComponent(Window* window) : 
-	IList<TextListData, T>(window), mSelectorImage(window)
+	IList<TextListData, T>(window), mSelectorImage(window), mFont(Font::get(FONT_SIZE_MEDIUM))
 {
 	mMarqueeOffset = 0;
 	mMarqueeTime = -MARQUEE_DELAY;
 
 	mHorizontalMargin = 0;
 	mAlignment = ALIGN_CENTER;
-
-	mFont = Font::get(FONT_SIZE_MEDIUM);
 	mUppercase = false;
 	mLineSpacing = 1.5f;
 	mSelectorHeight = mFont->getSize() * 1.5f;

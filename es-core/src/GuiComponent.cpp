@@ -3,7 +3,6 @@
 #include "Log.h"
 #include "Renderer.h"
 #include "animations/AnimationController.h"
-#include "ThemeData.h"
 #include "Settings.h"
 
 GuiComponent::GuiComponent(Window* window) : mWindow(window), mParent(NULL), mOpacity(255), 

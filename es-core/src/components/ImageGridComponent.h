@@ -29,7 +29,7 @@ public:
 	using IList<ImageGridData, T>::isScrolling;
 	using IList<ImageGridData, T>::stopScrolling;
 
-	ImageGridComponent(Window* window);
+	explicit ImageGridComponent(Window* window);
 
 	void add(const std::string& name, const std::string& imagePath, const T& obj);
 	
@@ -218,7 +218,6 @@ void ImageGridComponent<T>::updateImages()
 	Eigen::Vector2i gridSize = getGridSize();
 
 	int cursorRow = mCursor / gridSize.x();
-	int cursorCol = mCursor % gridSize.x();
 
 	int start = (cursorRow - (gridSize.y() / 2)) * gridSize.x();
 

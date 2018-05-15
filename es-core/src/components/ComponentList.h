@@ -25,7 +25,7 @@ struct ComponentListRow
 	std::function<bool(InputConfig*, Input)> input_handler;
 	std::function<bool(InputConfig*, Input)> help_handler;
 
-	ComponentListRow(const std::string& n = std::string()) : name(n)
+	explicit ComponentListRow(const std::string& n = std::string()) : name(n)
 	{}
 	
 	inline void addElement(const std::shared_ptr<GuiComponent>& component, bool resize_width, bool invert_when_selected = true)
@@ -62,7 +62,7 @@ struct ComponentListRow
 class ComponentList : public IList<ComponentListRow, void*>
 {
 public:
-	ComponentList(Window* window);
+	explicit ComponentList(Window* window);
 
 	void addRow(const ComponentListRow& row, bool setCursorHere = false, bool updateGeometry = true);
 

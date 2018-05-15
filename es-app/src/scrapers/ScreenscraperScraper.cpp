@@ -1,7 +1,5 @@
 #include "scrapers/ScreenscraperScraper.h"
 #include "Log.h"
-#include "pugixml/pugixml.hpp"
-#include "MetaData.h"
 #include "Settings.h"
 #include "Util.h"
 #include <boost/assign.hpp>

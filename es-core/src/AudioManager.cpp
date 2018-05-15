@@ -1,16 +1,11 @@
 #include "AudioManager.h"
 
-#include <SDL.h>
-#include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 #include <views/SystemView.h>
 #include "Log.h"
 #include "RecalboxConf.h"
 #include "Settings.h"
-#include "ThemeData.h"
 #include "Locale.h"
-#include <unistd.h>
-#include <time.h>
 #include <views/ViewController.h>
 #include <guis/GuiInfoPopup.h>
 

@@ -36,7 +36,6 @@ std::vector<unsigned char> ImageIO::loadFromMemoryRGBA32(const unsigned char * d
 				{
 					width = FreeImage_GetWidth(fiBitmap);
 					height = FreeImage_GetHeight(fiBitmap);
-					unsigned int pitch = FreeImage_GetPitch(fiBitmap);
 					//loop through scanlines and add all pixel data to the return vector
 					//this is necessary, because width*height*bpp might not be == pitch
 					unsigned char * tempData = new unsigned char[width * height * 4];

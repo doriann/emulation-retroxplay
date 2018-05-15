@@ -12,7 +12,7 @@ class TextureResource;
 class TextureData
 {
 public:
-	TextureData(bool tile);
+	explicit TextureData(bool tile);
 	~TextureData();
 
 	// These functions populate mDataRGBA but do not upload the texture to VRAM

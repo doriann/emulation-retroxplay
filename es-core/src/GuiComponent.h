@@ -16,7 +16,7 @@ typedef std::pair<std::string, std::string> HelpPrompt;
 class GuiComponent
 {
 public:
-	GuiComponent(Window* window);
+	explicit GuiComponent(Window* window);
 	virtual ~GuiComponent();
 
 	virtual void textInput(const char* text);

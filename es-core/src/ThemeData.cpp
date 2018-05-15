@@ -5,7 +5,6 @@
 #include "resources/TextureResource.h"
 #include "Log.h"
 #include "Settings.h"
-#include "pugixml/pugixml.hpp"
 #include <boost/assign.hpp>
 #include <boost/algorithm/string/replace.hpp>
 
@@ -246,7 +245,7 @@ ThemeData::ThemeData()
 	mSystemThemeFolder = "";
 }
 
-void ThemeData::loadFile(const std::string systemThemeFolder, const std::string& path)
+void ThemeData::loadFile(const std::string& systemThemeFolder, const std::string& path)
 {
 	mPaths.push_back(path);
 

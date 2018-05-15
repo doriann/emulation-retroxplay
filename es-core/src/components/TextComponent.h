@@ -14,7 +14,7 @@ class ThemeData;
 class TextComponent : public GuiComponent
 {
 public:
-	TextComponent(Window* window);
+	explicit TextComponent(Window* window);
 	TextComponent(Window* window, const std::string& text, const std::shared_ptr<Font>& font, unsigned int color = 0x000000FF, Alignment align = ALIGN_LEFT,
 		Eigen::Vector3f pos = Eigen::Vector3f::Zero(), Eigen::Vector2f size = Eigen::Vector2f::Zero(), unsigned int bgcolor = 0x00000000);
 

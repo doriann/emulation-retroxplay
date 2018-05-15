@@ -68,7 +68,7 @@ public:
 	static MetaDataList createFromXML(MetaDataListType type, pugi::xml_node node, const boost::filesystem::path& relativeTo);
 	void appendToXML(pugi::xml_node parent, bool ignoreDefaults, const boost::filesystem::path& relativeTo) const;
 
-	MetaDataList(MetaDataListType type);
+	explicit MetaDataList(MetaDataListType type);
 
 	void set(const std::string& key, const std::string& value);
 	void merge(const MetaDataList& other);

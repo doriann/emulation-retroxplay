@@ -2,7 +2,6 @@
 #include "Log.h"
 #include "Settings.h"
 #include <FreeImage.h>
-#include <boost/filesystem.hpp>
 #include <boost/assign.hpp>
 
 #include "GamesDBScraper.h"

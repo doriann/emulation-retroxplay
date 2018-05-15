@@ -1,16 +1,12 @@
 #include "guis/GuiScraperMulti.h"
 #include "Renderer.h"
-#include "Log.h"
 #include "views/ViewController.h"
 #include "Gamelist.h"
 
-#include "components/TextComponent.h"
 #include "components/ButtonComponent.h"
 #include "components/ScraperSearchComponent.h"
 #include "components/MenuComponent.h" // for makeButtonGrid
 #include "guis/GuiMsgBox.h"
-#include "Locale.h"
-#include "MenuThemeData.h"
 
 using namespace boost::locale;
 using namespace Eigen;

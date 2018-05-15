@@ -10,7 +10,7 @@ class TextCache;
 class TextEditComponent : public GuiComponent
 {
 public:
-	TextEditComponent(Window* window);
+	explicit TextEditComponent(Window* window);
 	
 	void textInput(const char* text) override;
 	bool input(InputConfig* config, Input input) override;

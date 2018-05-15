@@ -1,11 +1,8 @@
 #include "platform.h"
 #include "Renderer.h"
-#include "platform_gl.h"
 #include <iostream>
 #include "resources/Font.h"
-#include <boost/filesystem.hpp>
 #include "Log.h"
-#include <stack>
 #include "Util.h"
 
 namespace Renderer {

@@ -3,11 +3,6 @@
 #include "Settings.h"
 #include "Window.h"
 #include "Log.h"
-#include "pugixml/pugixml.hpp"
-#include <boost/filesystem.hpp>
-#include <utility>
-#include "platform.h"
-#include "Settings.h"
 
 #define KEYBOARD_GUID_STRING "-1"
 

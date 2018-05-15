@@ -3,14 +3,6 @@
 //
 
 #include "GuiLoading.h"
-#include "guis/GuiMsgBox.h"
-
-#include "Window.h"
-#include <boost/thread.hpp>
-#include <string>
-#include "Log.h"
-#include "Settings.h"
-#include "recalbox/RecalboxSystem.h"
 
 GuiLoading::GuiLoading(Window *window, const std::function<void*()> &mFunc) : GuiComponent(window), mBusyAnim(window), mFunc(mFunc),mFunc2(NULL), mBackground(window, ":/frame.png") {
     setSize((float) Renderer::getScreenWidth(), (float) Renderer::getScreenHeight());

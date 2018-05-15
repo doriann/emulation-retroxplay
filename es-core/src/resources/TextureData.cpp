@@ -4,9 +4,7 @@
 #include "ImageIO.h"
 #include "string.h"
 #include "Util.h"
-#include "nanosvg/nanosvg.h"
 #include "nanosvg/nanosvgrast.h"
-#include <vector>
 
 #define DPI 96
 

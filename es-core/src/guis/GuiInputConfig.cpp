@@ -3,14 +3,8 @@
 #include "Window.h"
 #include "Log.h"
 #include "components/TextComponent.h"
-#include "components/ImageComponent.h"
 #include "components/MenuComponent.h"
 #include "components/ButtonComponent.h"
-#include "Util.h"
-#include "Locale.h"
-#include "InputManager.h"
-#include "InputStack.h"
-#include "MenuThemeData.h"
 #include <boost/format.hpp>
 using namespace boost::locale;
 
@@ -237,7 +231,6 @@ void GuiInputConfig::setHelpMessage() {
 	int inputId = mList->getCursorId();
 	bool skippable = inputSkippable[inputId];
 	bool assigned = mTargetConfig->getInputByName(inputName[inputId], &input);
-	std::shared_ptr<TextComponent>& text = mMappings.at(inputId);
 	auto menuTheme = MenuThemeData::getInstance()->getCurrentTheme();
 
 	if (assigned) {

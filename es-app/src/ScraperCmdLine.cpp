@@ -2,7 +2,6 @@
 #include <iostream>
 #include <vector>
 #include "SystemData.h"
-#include "Settings.h"
 #include <signal.h>
 #include "Log.h"
 

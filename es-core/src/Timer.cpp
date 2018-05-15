@@ -1,11 +1,8 @@
 #include "Timer.h"
 #include <future>
-#include <boost/thread.hpp>
 
-Timer::Timer(int duration_in_ms, const std::function<void()>& callback)
+Timer::Timer(int duration_in_ms, const std::function<void()>& callback) : mDuration(duration_in_ms), mCallback(callback)
 {
-	mDuration = duration_in_ms;
-	mCallback = callback;
 	mHandle = new boost::thread(boost::bind(&Timer::proceed, this));
 }
 

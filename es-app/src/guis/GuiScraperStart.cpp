@@ -3,11 +3,8 @@
 #include "guis/GuiMsgBox.h"
 #include "views/ViewController.h"
 
-#include "components/TextComponent.h"
 #include "components/OptionListComponent.h"
 #include "components/SwitchComponent.h"
-#include "Locale.h"
-#include "Settings.h"
 
 
 GuiScraperStart::GuiScraperStart(Window* window) : GuiComponent(window),

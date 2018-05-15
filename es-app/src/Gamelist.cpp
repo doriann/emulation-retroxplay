@@ -1,7 +1,5 @@
 #include "Gamelist.h"
 #include "SystemData.h"
-#include "pugixml/pugixml.hpp"
-#include <boost/filesystem.hpp>
 #include <RecalboxConf.h>
 #include "Log.h"
 #include "Settings.h"
@@ -33,11 +31,10 @@ FileData* findOrCreateFile(SystemData* system, const boost::filesystem::path& pa
 
 	auto path_it = relative.begin();
 	FileData* treeNode = root;
-	bool found = false;
 	while(path_it != relative.end())
 	{
 		const std::unordered_map<std::string, FileData*>& children = treeNode->getChildrenByFilename();
-
+		bool found = false;
 		std::string key = path_it->string();
 		found = children.find(key) != children.end();
 		if (found) {

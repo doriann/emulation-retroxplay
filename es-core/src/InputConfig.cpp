@@ -1,7 +1,5 @@
 #include "InputConfig.h"
-#include <string>
 #include <algorithm>
-#include <SDL.h>
 #include <iostream>
 #include "Log.h"
 #include "InputManager.h"
@@ -56,9 +54,9 @@ InputConfig::InputConfig(const InputConfig* source) :
 	mDeviceGUID(source->getDeviceGUIDString()), 
 	mDeviceNbAxes(source->getDeviceNbAxes()), 
 	mDeviceNbHats(source->getDeviceNbHats()), 
-	mDeviceNbButtons(source->getDeviceNbButtons())
+	mDeviceNbButtons(source->getDeviceNbButtons()),
+	mNameMap(source->getNameMap())
 {
-	mNameMap = source->getNameMap();
 }
 
 
@@ -117,7 +115,7 @@ std::string InputConfig::getSysPowerLevel()
 {
 	SDL_Joystick* joy;
 	//joy = InputManager::getInstance()->getJoystickByJoystickID(getDeviceId());
-	joy = SDL_JoystickOpen(getDeviceId());
+	//joy = SDL_JoystickOpen(getDeviceId());
 	return "\uF1be";
 }
 

@@ -1,8 +1,4 @@
 #include "resources/Font.h"
-#include <iostream>
-#include <algorithm>
-#include <vector>
-#include <boost/filesystem.hpp>
 #include "Renderer.h"
 #include "Log.h"
 #include "Util.h"
@@ -618,13 +614,13 @@ std::string Font::wrapText(std::string text, float xLen)
 	std::string out;
 
 	std::string line, word, temp;
-	size_t space;
 
 	Eigen::Vector2f textSize;
 
 	while(text.length() > 0) //while there's text or we still have text to render
 	{
-		space = text.find_first_of(" \t\n");
+
+		size_t space = text.find_first_of(" \t\n");
 		if(space == std::string::npos)
 			space = text.length() - 1;
 

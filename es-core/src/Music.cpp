@@ -1,9 +1,7 @@
 #include "Music.h"
 #include "Log.h"
-#include "Settings.h"
 #include "ThemeData.h"
 #include "AudioManager.h"
-#include "RecalboxConf.h"
 
 std::map< std::string, std::shared_ptr<Music> > Music::sMap;
 
@@ -32,9 +30,8 @@ std::shared_ptr<Music> Music::getFromTheme(const std::shared_ptr<ThemeData>& the
 	return get(elem->get<std::string>("path"));
 }
 
-Music::Music(const std::string & path) : music(NULL), playing(false)
+Music::Music(const std::string & path) : music(NULL), playing(false), mPath(path)
 {
-	mPath = path;
 	initMusic();
 }
 

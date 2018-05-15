@@ -33,7 +33,7 @@ void CommandThread::run() {
 	while (mRunning) {
 		udp::endpoint sender_endpoint;
 		size_t length = sock.receive_from(boost::asio::buffer(buf, max_length), sender_endpoint);
-		if (length <= 0) {
+		if (length == 0) {
 			continue;
 		}
 		buf[length + 1] = '\0';
@@ -73,7 +73,7 @@ void CommandThread::run() {
 	}
 }
 
-FileData* CommandThread::findRecursive(const std::vector<FileData*> gameFolder, const std::string& gameName, const std::string& relativePath) {
+FileData* CommandThread::findRecursive(const std::vector<FileData*>& gameFolder, const std::string& gameName, const std::string& relativePath) {
 	// Recursively look for the game in subfolders too
 	for (auto game = gameFolder.begin(); game != gameFolder.end(); ++game) {
 		std::string gameAndPath;

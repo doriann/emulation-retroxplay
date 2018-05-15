@@ -1,22 +1,15 @@
 #include "views/SystemView.h"
 #include "SystemData.h"
-#include "Renderer.h"
 #include "Log.h"
-#include "Window.h"
 #include "views/ViewController.h"
 #include "animations/LambdaAnimation.h"
-#include "SystemData.h"
 #include "Settings.h"
-#include "Util.h"
 #include <guis/GuiMsgBox.h>
 #include <recalbox/RecalboxSystem.h>
 #include <components/ComponentList.h>
 #include <guis/GuiSettings.h>
 #include <RecalboxConf.h>
-#include "ThemeData.h"
-#include "MenuThemeData.h"
 #include "AudioManager.h"
-#include "Locale.h"
 
 // buffer values for scrolling velocity (left, stopped, right)
 const int logoBuffersLeft[] = { -5, -2, -1 };

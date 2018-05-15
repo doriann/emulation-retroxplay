@@ -1,16 +1,8 @@
 #include "SystemData.h"
 #include "Gamelist.h"
-#include <boost/filesystem.hpp>
-#include <fstream>
-#include <utility>
-#include <stdlib.h>
-#include <SDL_joystick.h>
-#include "Renderer.h"
 #include "AudioManager.h"
 #include "VolumeControl.h"
 #include "Log.h"
-#include "InputManager.h"
-#include <iostream>
 #include "Settings.h"
 #include "FileSorts.h"
 #include "Util.h"
@@ -26,12 +18,10 @@ namespace fs = boost::filesystem;
 SystemData::SystemData(std::string name, std::string fullName, std::string startPath,
                            std::vector<std::string> extensions, std::string command,
                            std::vector<PlatformIds::PlatformId> platformIds, std::string themeFolder,
-                           std::map<std::string, std::vector<std::string>*>* emulators)
+                           std::map<std::string, std::vector<std::string>*>* emulators) : mName(name),
+								mFullName(fullName), mStartPath(getExpandedPath(startPath)),
+								mEmulators(emulators)
 {
-	mName = name;
-	mFullName = fullName;
-	mStartPath = getExpandedPath(startPath);
-	mEmulators = emulators;
 
 	// make it absolute if needed
 	{
@@ -63,14 +53,9 @@ SystemData::SystemData(std::string name, std::string fullName, std::string start
 }
 
 SystemData::SystemData(std::string name, std::string fullName, std::string command,
-					   std::string themeFolder, std::vector<SystemData*>* systems)
+					   std::string themeFolder, std::vector<SystemData*>* systems) : mName(name),
+							mFullName(fullName), mStartPath(""), mLaunchCommand(command), mThemeFolder(themeFolder)
 {
-	mName = name;
-	mFullName = fullName;
-	mStartPath = "";
-
-	mLaunchCommand = command;
-	mThemeFolder = themeFolder;
 
 	mRootFolder = new FileData(FOLDER, mStartPath, this);
 	mRootFolder->metadata.set("name", mFullName);
@@ -363,7 +348,7 @@ bool SystemData::loadConfig()
 	boost::asio::io_service ioService;
 	boost::thread_group threadpool;
 	boost::asio::io_service::work work(ioService);
-	std::vector<boost::thread *> threads;
+	//std::vector<boost::thread *> threads;
 	for (int i = 0; i < 4; i++) {
 		threadpool.create_thread(
 				boost::bind(&boost::asio::io_service::run, &ioService)
@@ -471,7 +456,7 @@ void SystemData::deleteSystems()
 		boost::asio::io_service ioService;
 		boost::thread_group threadpool;
 		boost::asio::io_service::work work(ioService);
-		std::vector<boost::thread *> threads;
+		//std::vector<boost::thread *> threads;
 		for (int i = 0; i < 4; i++) {
 			threadpool.create_thread(
 					boost::bind(&boost::asio::io_service::run, &ioService)

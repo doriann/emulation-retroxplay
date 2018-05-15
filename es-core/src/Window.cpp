@@ -1,10 +1,7 @@
 #include "Window.h"
-#include <iostream>
 #include "Renderer.h"
-#include "AudioManager.h"
 #include "Log.h"
 #include "Settings.h"
-#include <algorithm>
 #include <iomanip>
 #include <guis/GuiMsgBoxScroll.h>
 #include <guis/GuiInfoPopup.h>
@@ -24,6 +21,7 @@ Window::Window() : mNormalizeNextUpdate(false), mFrameTimeElapsed(0), mFrameCoun
 	mBackgroundOverlay = new ImageComponent(this);
 	auto menuTheme = MenuThemeData::getInstance()->getCurrentTheme();
 	mBackgroundOverlay->setImage(menuTheme->menuBackground.fadePath);
+	mRenderedHelpPrompts = false;
 }
 
 Window::~Window()

@@ -9,7 +9,7 @@
 
 class GuiUpdate : public GuiComponent {
 public:
-    GuiUpdate(Window *window);
+    explicit GuiUpdate(Window *window);
 
     virtual ~GuiUpdate();
 

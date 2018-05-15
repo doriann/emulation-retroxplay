@@ -1,9 +1,6 @@
 #include "Renderer.h"
 #include <iostream>
-#include "platform.h"
-#include "platform_gl.h"
 #include "resources/Font.h"
-#include <SDL.h>
 #include "Log.h"
 #include "ImageIO.h"
 #include "../data/Resources.h"

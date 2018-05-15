@@ -2,7 +2,6 @@
 #include <assert.h>
 #include "Renderer.h"
 #include "resources/Font.h"
-#include "Log.h"
 #include "Util.h"
 #include "Locale.h"
 #include "MenuThemeData.h"

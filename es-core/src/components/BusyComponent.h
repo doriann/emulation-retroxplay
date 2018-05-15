@@ -9,7 +9,7 @@ class TextComponent;
 class BusyComponent : public GuiComponent
 {
 public:
-	BusyComponent(Window* window);
+	explicit BusyComponent(Window* window);
 	~BusyComponent();
 
 	void onSizeChanged() override;

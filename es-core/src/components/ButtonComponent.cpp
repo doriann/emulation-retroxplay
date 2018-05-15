@@ -2,8 +2,6 @@
 #include "Renderer.h"
 #include "Window.h"
 #include "Util.h"
-#include "Log.h"
-#include "Locale.h"
 #include "MenuThemeData.h"
 
 ButtonComponent::ButtonComponent(Window* window, const std::string& text, const std::string& helpText, const std::function<void()>& func) : GuiComponent(window),

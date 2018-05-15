@@ -3,17 +3,13 @@
 //
 
 #include "GuiInfoPopup.h"
-#include "components/ComponentGrid.h"
-#include "components/NinePatchComponent.h"
 #include "components/TextComponent.h"
 #include "Renderer.h"
-#include <SDL_timer.h>
 #include <MenuThemeData.h>
-#include <components/ScrollableContainer.h>
 #include <Settings.h>
 
 GuiInfoPopup::GuiInfoPopup(Window* window, std::string message, int duration, std::string icon) :
-		GuiComponent(window), mDuration(duration * 1000), running(true), mGrid(window, Eigen::Vector2i(2, 1)), mFrame(window, ":/frame.png")
+		GuiComponent(window), mDuration(duration * 1000), running(true), mGrid(window, Eigen::Vector2i(2, 1)), mFrame(window, ":/frame.png"), alpha(0)
 {
 
 	bool noIcon = icon == "";

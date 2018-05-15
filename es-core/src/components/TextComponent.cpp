@@ -2,7 +2,6 @@
 #include "Renderer.h"
 #include "Log.h"
 #include "Window.h"
-#include "ThemeData.h"
 #include "Util.h"
 #include "Settings.h"
 #include "Locale.h"
