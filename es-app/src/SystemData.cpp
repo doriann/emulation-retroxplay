@@ -9,6 +9,7 @@
 #include <boost/thread.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/asio/io_service.hpp>
+#include <boost/make_shared.hpp>
 #include <RecalboxConf.h>
 
 std::vector<SystemData*> SystemData::sSystemVector;
