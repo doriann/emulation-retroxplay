@@ -1,38 +1,34 @@
 #include "SystemData.h"
 #include "Gamelist.h"
-#include <boost/filesystem.hpp>
-#include <fstream>
-#include <utility>
-#include <stdlib.h>
-#include <SDL_joystick.h>
-#include "Renderer.h"
 #include "AudioManager.h"
 #include "VolumeControl.h"
 #include "Log.h"
-#include "InputManager.h"
-#include <iostream>
 #include "Settings.h"
 #include "FileSorts.h"
 #include "Util.h"
 #include <boost/thread.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 #include <boost/asio/io_service.hpp>
-#include <boost/make_shared.hpp>
 #include <RecalboxConf.h>
 
 std::vector<SystemData*> SystemData::sSystemVector;
 
 namespace fs = boost::filesystem;
+namespace pt = boost::property_tree;
 
-SystemData::SystemData(std::string name, std::string fullName, std::string startPath,
-                           std::vector<std::string> extensions, std::string command,
-                           std::vector<PlatformIds::PlatformId> platformIds, std::string themeFolder,
-                           std::map<std::string, std::vector<std::string>*>* emulators)
+SystemData::SystemData(const std::string& name, const std::string& fullName, const std::string& startPath,
+                       const std::vector<std::string>& extensions, const std::string& command,
+                       const std::vector<PlatformIds::PlatformId>& platformIds, const std::string& themeFolder,
+                       std::map<std::string, std::vector<std::string>*>* emulators)
+    : mName(name),
+      mFullName(fullName),
+      mStartPath(getExpandedPath(startPath)),
+      mLaunchCommand(command),
+      mThemeFolder(themeFolder),
+      mEmulators(emulators),
+      mSearchExtensions(extensions),
+      mPlatformIds(platformIds)
 {
-	mName = name;
-	mFullName = fullName;
-	mStartPath = getExpandedPath(startPath);
-	mEmulators = emulators;
-
 	// make it absolute if needed
 	{
 		const std::string defaultRomsPath = getExpandedPath(Settings::getInstance()->getString("DefaultRomsPath"));
@@ -42,11 +38,6 @@ SystemData::SystemData(std::string name, std::string fullName, std::string start
 			mStartPath = fs::absolute(mStartPath, defaultRomsPath).generic_string();
 		}
 	}
-
-	mSearchExtensions = extensions;
-	mLaunchCommand = command;
-	mPlatformIds = platformIds;
-	mThemeFolder = themeFolder;
 
 	mRootFolder = new FileData(FOLDER, mStartPath, this);
 	mRootFolder->metadata.set("name", mFullName);
@@ -62,27 +53,25 @@ SystemData::SystemData(std::string name, std::string fullName, std::string start
 	loadTheme();
 }
 
-SystemData::SystemData(std::string name, std::string fullName, std::string command,
-					   std::string themeFolder, std::vector<SystemData*>* systems)
+SystemData::SystemData(const std::string& name, const std::string& fullName, const std::string& command,
+					   const std::string& themeFolder, std::vector<SystemData*>* systems)
+ : mName(name),
+   mFullName(fullName),
+   mStartPath(),
+   mLaunchCommand(command),
+   mThemeFolder(themeFolder),
+   mEmulators(nullptr)
 {
-	mName = name;
-	mFullName = fullName;
-	mStartPath = "";
-
-	mLaunchCommand = command;
-	mThemeFolder = themeFolder;
-
 	mRootFolder = new FileData(FOLDER, mStartPath, this);
 	mRootFolder->metadata.set("name", mFullName);
 
-	for(auto system = systems->begin(); system != systems->end(); system ++){
-		std::vector<FileData*> favorites = (*system)->getFavorites();
-		for(auto favorite = favorites.begin(); favorite != favorites.end(); favorite++){
-			mRootFolder->addAlreadyExisitingChild((*favorite));
-		}
+	for(auto system : *systems){
+		std::vector<FileData*> favorites = system->getFavorites();
+		for(auto favorite : favorites)
+			mRootFolder->addAlreadyExisitingChild(favorite);
 	}
 
-	if(mRootFolder->getChildren().size())
+	if(!mRootFolder->getChildren().empty())
 		mRootFolder->sort(FileSorts::SortTypes.at(0));
 	mIsFavorite = true;
 	mPlatformIds.push_back(PlatformIds::PLATFORM_IGNORE);
@@ -106,8 +95,8 @@ SystemData::~SystemData()
 		delete mRootFolder;
 	}
 	if (mEmulators) {
-		for (auto itr = mEmulators->begin(); itr != mEmulators->end(); itr++) {
-			delete (itr->second);
+		for (const auto& itr : *mEmulators) {
+			delete (itr.second);
 		}
 		mEmulators->clear();
 
@@ -233,36 +222,27 @@ std::vector<std::string> readList(const std::string& str, const char* delims = "
 	return ret;
 }
 
-SystemData * createSystem(pugi::xml_node * systemsNode, int index ){
+SystemData* createSystem(const SystemData::Tree& system)
+{
 	std::string name, fullname, path, cmd, themeFolder;
-	PlatformIds::PlatformId platformId = PlatformIds::PLATFORM_UNKNOWN;
+	//PlatformIds::PlatformId platformId = PlatformIds::PLATFORM_UNKNOWN;
 
-	int myIndex = 0;
-	pugi::xml_node * system;
-	for(pugi::xml_node systemIn = systemsNode->child("system"); systemIn; systemIn = systemIn.next_sibling("system"))
-	{
-		if(myIndex >= index) {
-			system = &(systemIn);
-			break;
-		}
-		myIndex++;
-	}
-	name = system->child("name").text().get();
-	fullname = system->child("fullname").text().get();
-	path = system->child("path").text().get();
+	name = system.get("name", "");
+	fullname = system.get("fullname", "");
+	path = system.get("path", "");
 
 	// convert extensions list from a string into a vector of strings
-	std::vector<std::string> extensions = readList(system->child("extension").text().get());
+	std::vector<std::string> extensions = readList(system.get("extension", ""));
 
-	cmd = system->child("command").text().get();
+	cmd = system.get("command", "");
 
 	// platform id list
-	const char* platformList = system->child("platform").text().get();
+	const std::string platformList = system.get("platform", "");
 	std::vector<std::string> platformStrs = readList(platformList);
 	std::vector<PlatformIds::PlatformId> platformIds;
-	for(auto it = platformStrs.begin(); it != platformStrs.end(); it++)
+	for(const auto& it : platformStrs)
 	{
-		const char* str = it->c_str();
+		const char* str = it.c_str();
 		PlatformIds::PlatformId platformId = PlatformIds::getPlatformId(str);
 
 		if(platformId == PlatformIds::PLATFORM_IGNORE)
@@ -274,20 +254,20 @@ SystemData * createSystem(pugi::xml_node * systemsNode, int index ){
 		}
 
 		// if there appears to be an actual platform ID supplied but it didn't match the list, warn
-		if(str != NULL && str[0] != '\0' && platformId == PlatformIds::PLATFORM_UNKNOWN)
+		if(str != nullptr && str[0] != '\0' && platformId == PlatformIds::PLATFORM_UNKNOWN)
 		LOG(LogWarning) << "  Unknown platform for system \"" << name << "\" (platform \"" << str << "\" from list \"" << platformList << "\")";
 		else if(platformId != PlatformIds::PLATFORM_UNKNOWN)
 			platformIds.push_back(platformId);
 	}
 
 	// theme folder
-	themeFolder = system->child("theme").text().as_string(name.c_str());
+	themeFolder = system.get("theme", "");
 
 	//validate
 	if(name.empty() || path.empty() || extensions.empty() || cmd.empty())
 	{
 		LOG(LogError) << "System \"" << name << "\" is missing name, path, extension, or command!";
-		return NULL;
+		return nullptr;
 	}
 
 	//convert path to generic directory seperators
@@ -295,67 +275,127 @@ SystemData * createSystem(pugi::xml_node * systemsNode, int index ){
 	path = genericPath.generic_string();
 
 	// emulators and cores
-	std::map<std::string, std::vector<std::string>*> * systemEmulators = new std::map<std::string, std::vector<std::string>*>();
-	pugi::xml_node emulatorsNode = system->child("emulators");
-	for(pugi::xml_node emuNode = emulatorsNode.child("emulator"); emuNode; emuNode = emuNode.next_sibling("emulator")) {
-		std::string emulatorName = emuNode.attribute("name").as_string();
+	auto systemEmulators = new std::map<std::string, std::vector<std::string>*>();
+	//SystemData::Tree emulatorsNode = system.get("emulators", "");
+	for(const SystemData::TreeNode& emuNode : system.get_child("emulators"))
+	{
+		const std::string& emulatorName = emuNode.second.get_child("<xmlattr>").get("name", "");
 		(*systemEmulators)[emulatorName] = new std::vector<std::string>();
-		pugi::xml_node coresNode = emuNode.child("cores");
-		for (pugi::xml_node coreNode = coresNode.child("core"); coreNode; coreNode = coreNode.next_sibling("core")) {
-			std::string corename = coreNode.text().as_string();
+		for (const SystemData::TreeNode& coreNode : emuNode.second.get_child("cores"))
+		{
+			const std::string& corename = coreNode.second.data();
 			(*systemEmulators)[emulatorName]->push_back(corename);
 		}
 	}
 
-
-	SystemData* newSys = new SystemData(name,
-										fullname,
-										path, extensions,
-										cmd, platformIds,
-										themeFolder,
-										systemEmulators);
-	if(newSys->getRootFolder()->getDisplayableRecursive(GAME | FOLDER).size() == 0)
+	auto newSys = new SystemData(name,
+                                 fullname,
+                                 path, extensions,
+                                 cmd, platformIds,
+                                 themeFolder,
+                                 systemEmulators);
+	if(newSys->getRootFolder()->getDisplayableRecursive(GAME | FOLDER).empty())
 	{
 		LOG(LogWarning) << "System \"" << name << "\" has no games! Ignoring it.";
 		delete newSys;
-		return NULL;
+		return nullptr;
 	}else{
 		LOG(LogWarning) << "Adding \"" << name << "\" in system list.";
 		return newSys;
 	}
 }
 
+bool SystemData::loadSystemNodes(XmlNodeCollisionMap& collisionMap, XmlNodeList& nodeStore, const Tree& document)
+{
+    bool result = false;
+    for (const TreeNode& systemNode : document.get_child("systemList"))
+	{
+	    // At least one node found
+	    result = true;
+
+	    // Get system
+        const Tree& system = systemNode.second;
+
+		// Composite key: short name + platform
+		std::string key = system.get("name", "");
+		key += system.get("platform", "");
+        LOG(LogWarning) << "Key: " << key;
+
+		// Already exist in the store ?
+		int index = (collisionMap.find(key) != collisionMap.end()) ? collisionMap[key] : -1;
+
+		// If the system does not exists, add it to the end of list.
+		// Replace the existing entry otherwise.
+		// This way, we keep the original ordering of first-in entries
+		if (index < 0)
+        {
+            collisionMap[key] = (int)nodeStore.size();
+            nodeStore.push_back(system);
+        }
+		else nodeStore[index] = system;
+	}
+
+    if(!result)
+        LOG(LogError) << "missing or empty <systemList> tag!";
+
+    return result;
+}
+
+bool SystemData::loadXmlFile(Tree& document, const std::string& filePath)
+{
+    try
+    {
+        pt::read_xml(filePath, document);
+    }
+    catch(std::exception& e)
+    {
+        LOG(LogError) << "Could not parse " << filePath <<" file!";
+        LOG(LogError) << e.what();
+        return false;
+    }
+    return true;
+}
+
+bool SystemData::loadSystemList(Tree& document, XmlNodeCollisionMap& collisionMap, XmlNodeList& nodeStore, const std::string& filePath)
+{
+	// Load user configuration
+	if (!fs::exists(filePath))
+	{
+		LOG(LogError) << filePath << " file does not exist!";
+		return false;
+	}
+
+	LOG(LogInfo) << "Loading system config files " << filePath << "...";
+    if (!loadXmlFile(document, filePath)) return false;
+
+	bool result = loadSystemNodes(collisionMap, nodeStore, document);
+	if (!result) LOG(LogWarning) << filePath << " has no systems or systemList nodes";
+
+	return result;
+}
+
 //creates systems from information located in a config file
 bool SystemData::loadConfig()
 {
 	deleteSystems();
-	std::string path = getConfigPath(false);
 
-	LOG(LogInfo) << "Loading system config file " << path << "...";
+	// System store
+	XmlNodeCollisionMap systemMap;    // System key to vector index
+	XmlNodeList         systemList;  // Sorted storage, keeping original system node ordering
+	// XML Documents - declared here to keep node memory allocated
+    pt::ptree templateDocument;
+    pt::ptree userDocument;
 
-	if(!fs::exists(path))
+	// Load user systems
+	bool userValid = loadSystemList(userDocument, systemMap, systemList, getUserConfigPath());
+	// Load template systems
+    bool templateValid = loadSystemList(templateDocument, systemMap, systemList, getTemplateConfigPath());
+
+	// Is there at least
+	if (!templateValid && !userValid)
 	{
-		LOG(LogError) << "es_systems.cfg file does not exist!";
-		writeExampleConfig(getConfigPath(true));
-		return false;
-	}
-
-	pugi::xml_document doc;
-	pugi::xml_parse_result res = doc.load_file(path.c_str());
-
-	if(!res)
-	{
-		LOG(LogError) << "Could not parse es_systems.cfg file!";
-		LOG(LogError) << res.description();
-		return false;
-	}
-
-	//actually read the file
-	pugi::xml_node systemList = doc.child("systemList");
-
-	if(!systemList)
-	{
-		LOG(LogError) << "es_systems.cfg is missing the <systemList> tag!";
+		LOG(LogError) << "No es_systems.cfg file available!";
+		writeExampleConfig(getUserConfigPath());
 		return false;
 	}
 
@@ -363,43 +403,40 @@ bool SystemData::loadConfig()
 	boost::asio::io_service ioService;
 	boost::thread_group threadpool;
 	boost::asio::io_service::work work(ioService);
-	std::vector<boost::thread *> threads;
-	for (int i = 0; i < 4; i++) {
-		threadpool.create_thread(
-				boost::bind(&boost::asio::io_service::run, &ioService)
-		);
-	}
+	for (int i = 4; -- i>= 0; )
+		threadpool.create_thread(boost::bind(&boost::asio::io_service::run, &ioService));
 
-	int index = 0;
+	// Iterate over the map using Iterator till end.
 	std::vector<boost::unique_future<SystemData*>> pending_data;
-	for(pugi::xml_node system = systemList.child("system"); system; system = system.next_sibling("system"))
+    for(const Tree& system : systemList)
 	{
-		LOG(LogInfo) << "creating thread for system " << system.child("name").text().get();
+		LOG(LogInfo) << "creating thread for system " << system.get("name", "???");
 		typedef boost::packaged_task<SystemData*> task_t;
 		boost::shared_ptr<task_t> task = boost::make_shared<task_t>(
-				boost::bind(&createSystem, &systemList, index++));
+				boost::bind(&createSystem, system));
 		boost::unique_future<SystemData*> fut = task->get_future();
 		pending_data.push_back(std::move(fut));
 		ioService.post(boost::bind(&task_t::operator(), task));
 	}
 	boost::wait_for_all(pending_data.begin(), pending_data.end());
 
-	for(auto pending = pending_data.begin(); pending != pending_data.end(); pending ++){
-		SystemData * result = pending->get();
-		if(result != NULL)
+	for(auto& pending : pending_data)
+	{
+		SystemData * result = pending.get();
+		if(result != nullptr)
 			sSystemVector.push_back(result);
 	}
 	ioService.stop();
 	threadpool.join_all();
 
-	if(sSystemVector.size() == 0) return true;
+	if (sSystemVector.empty()) return true;
 	// Favorite system
-	for(pugi::xml_node system = systemList.child("system"); system; system = system.next_sibling("system")) {
-
-		std::string name = system.child("name").text().get();
-		std::string fullname = system.child("fullname").text().get();
-		std::string cmd = system.child("command").text().get();
-		std::string themeFolder = system.child("theme").text().as_string(name.c_str());
+	for (const Tree& system : systemList)
+	{
+		std::string name = system.get("name", "");
+		std::string fullname = system.get("fullname", "");
+		std::string cmd = system.get("command", "");
+		std::string themeFolder = system.get("theme", "");
 
 		if (name == "favorites") {
 			LOG(LogInfo) << "creating favorite system";
@@ -407,7 +444,6 @@ bool SystemData::loadConfig()
 			sSystemVector.push_back(newSys);
 		}
 	}
-
 
 	return true;
 }
@@ -466,12 +502,13 @@ bool deleteSystem(SystemData * system){
 
 void SystemData::deleteSystems()
 {
-	if(sSystemVector.size()) {
+	if (!sSystemVector.empty())
+	{
 		// THE DELETION OF EACH SYSTEM
 		boost::asio::io_service ioService;
 		boost::thread_group threadpool;
 		boost::asio::io_service::work work(ioService);
-		std::vector<boost::thread *> threads;
+		//std::vector<boost::thread *> threads;
 		for (int i = 0; i < 4; i++) {
 			threadpool.create_thread(
 					boost::bind(&boost::asio::io_service::run, &ioService)
@@ -479,16 +516,15 @@ void SystemData::deleteSystems()
 		}
 
 		std::vector<boost::unique_future<bool>> pending_data;
-		for (unsigned int i = 0; i < sSystemVector.size(); i++) {
-			if(!(sSystemVector.at(i))->isFavorite()) {
-				typedef boost::packaged_task<bool> task_t;
-				boost::shared_ptr<task_t> task = boost::make_shared<task_t>(
-						boost::bind(&deleteSystem, sSystemVector.at(i)));
-				boost::unique_future<bool> fut = task->get_future();
-				pending_data.push_back(std::move(fut));
-				ioService.post(boost::bind(&task_t::operator(), task));
-			}
-		}
+		for (SystemData* system : sSystemVector)
+        {
+            typedef boost::packaged_task<bool> task_t;
+            boost::shared_ptr<task_t> task = boost::make_shared<task_t>(
+                    boost::bind(&deleteSystem, system));
+            boost::unique_future<bool> fut = task->get_future();
+            pending_data.push_back(std::move(fut));
+            ioService.post(boost::bind(&task_t::operator(), task));
+        }
 
 		boost::wait_for_all(pending_data.begin(), pending_data.end());
 
@@ -498,14 +534,25 @@ void SystemData::deleteSystems()
 	}
 }
 
-std::string SystemData::getConfigPath(bool forWrite)
+std::string SystemData::getUserConfigPath()
 {
-	fs::path path = getHomePath() + "/.emulationstation/es_systems.cfg";
-	if(forWrite || fs::exists(path))
-		return path.generic_string();
-
-	return "/etc/emulationstation/es_systems.cfg";
+	fs::path path = getHomePath() + mUserConfigurationRelativePath;
+    return path.generic_string();
 }
+
+std::string SystemData::getTemplateConfigPath()
+{
+    return mTemplateConfigurationAbsolutePath;
+}
+
+/*std::string SystemData::getConfigPath(bool forWrite)
+{
+	std::string path = getUserConfigPath();
+	if(forWrite || fs::exists(path))
+		return path;
+
+	return getTemplateConfigPath();
+}*/
 
 std::string SystemData::getGamelistPath(bool forWrite) const {
 	fs::path filePath;
@@ -551,24 +598,24 @@ std::string SystemData::getThemePath() const
 	return localThemePath.generic_string();
 }
 
-bool SystemData::hasGamelist() const
+/*bool SystemData::hasGamelist() const
 {
 	return (fs::exists(getGamelistPath(false)));
-}
+}*/
 
 unsigned int SystemData::getGameCount() const
 {
-	return mRootFolder->getFilesRecursive(GAME).size();
+	return (unsigned int)mRootFolder->getFilesRecursive(GAME).size();
 }
 
 unsigned int SystemData::getFavoritesCount() const
 {
-	return mRootFolder->getFavoritesRecursive(GAME).size();
+	return (unsigned int)mRootFolder->getFavoritesRecursive(GAME).size();
 }
 
 unsigned int SystemData::getHiddenCount() const
 {
-	return mRootFolder->getHiddenRecursive(GAME).size();
+	return (unsigned int)mRootFolder->getHiddenRecursive(GAME).size();
 }
 
 void SystemData::loadTheme()
@@ -592,38 +639,38 @@ void SystemData::loadTheme()
 	}
 }
 
-std::map<std::string, std::vector<std::string>*>* SystemData::getEmulators() {
+std::map<std::string, std::vector<std::string>*>* SystemData::getEmulators()
+{
 	return mEmulators;
 }
 
-std::vector<std::string> SystemData::getCores(std::string emulatorName) {
+std::vector<std::string> SystemData::getCores(const std::string& emulatorName)
+{
 	std::vector<std::string> list;
-    for (auto emulator = mEmulators->begin(); emulator != mEmulators->end(); emulator++) {
-        if (emulatorName == emulator->first) {
-			list = *emulator->second;
+    for (auto emulator : *mEmulators)
+    {
+        if (emulatorName == emulator.first)
+        {
+			list = *emulator.second;
 			break;
 		}
 	}
 	return list;
 }
 
-SystemData* SystemData::getFavoriteSystem() {
-	for(auto system = sSystemVector.begin(); system != sSystemVector.end(); system ++){
-		if((*system)->isFavorite()){
-			return (*system);
-		}
-	}
-	return NULL;
+SystemData* SystemData::getFavoriteSystem()
+{
+    for(int i = (int)sSystemVector.size(); --i>= 0;)
+        if (sSystemVector[i]->isFavorite())
+            return sSystemVector[i];
+	return nullptr;
 }
 
-int SystemData::getSystemIndex(std::string name) {
-    int index = 0;
-	for(auto system = sSystemVector.begin(); system != sSystemVector.end(); system ++){
-		if((*system)->mName == name){
-			return index;
-		}
-        index++;
-	}
+int SystemData::getSystemIndex(const std::string& name)
+{
+    for(int i = (int)sSystemVector.size(); --i>= 0;)
+        if (sSystemVector[i]->mName == name)
+            return i;
 	return -1;
 }
 
