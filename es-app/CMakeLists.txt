@@ -12,6 +12,9 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Gamelist.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/NetworkThread.h
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/MetadataFieldDescriptor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/MetadataDescriptor.h
+
     # GuiComponents
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/AsyncReqComponent.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/RatingComponent.h
@@ -51,12 +54,17 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/animations/LaunchAnimation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/animations/MoveCameraAnimation.h
 
+    # DateTime
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/datetime/DateTime.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/datetime/TimeSpan.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/datetime/ISystemDateTimeInterface.h
+
     # Recalbox
     ${CMAKE_CURRENT_SOURCE_DIR}/src/recalbox/RecalboxSystem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/recalbox/RecalboxUpgrade.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/LibretroRatio.h
     ${CMAKE_CURRENT_SOURCE_DIR}/src/CommandThread.h
-)
+    )
 
 set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/FileData.cpp
@@ -70,7 +78,8 @@ set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/VolumeControl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/Gamelist.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/NetworkThread.cpp
-
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/MetadataFieldDescriptor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/MetadataDescriptor.cpp
 
     # GuiComponents
     ${CMAKE_CURRENT_SOURCE_DIR}/src/components/AsyncReqComponent.cpp
@@ -106,11 +115,15 @@ set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/views/SystemView.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/views/ViewController.cpp
 
+    # DateTime
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/datetime/DateTime.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/datetime/TimeSpan.cpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/src/recalbox/RecalboxSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/recalbox/RecalboxUpgrade.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/LibretroRatio.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/CommandThread.cpp
-)
+        src/datetime/SystemDateTimeInterface.cpp)
 
 #-------------------------------------------------------------------------------
 # define OS specific sources and headers
