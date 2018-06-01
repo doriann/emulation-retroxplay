@@ -1,20 +1,25 @@
 #pragma once
 
 #include <boost/property_tree/ptree.hpp>
-#include "MetadataFieldDescriptor.h"
 #include "datetime/DateTime.h"
+
+// Forward declaration (MetadataFieldDescriptor must indlude MetadataDescriptor)
+class MetadataFieldDescriptor;
 
 class MetadataDescriptor
 {
   public:
     //! Metadata type
-    enum class  Type
+    enum class Type : char
     {
       Game,
       Folder,
     };
 
   private:
+    //! Default value storage for fast dafault detection
+    static MetadataDescriptor _Default;
+
     //! Game node <game></game>
     static const std::string GameNodeIdentifier;
     //! Folder node <folder></folder>
@@ -41,8 +46,11 @@ class MetadataDescriptor
     int         _RomCrc32;     //!< Rom Crc32
     bool        _Favorite;     //!< Favorite gale
     bool        _Hidden;       //!< Hidden game
+    bool        _Dirty;        //!< Dirty flag (modified data flag)
 
     Type        _Type;         //!< Metadata type
+
+    static MetadataDescriptor BuildDefaultValueMetadataDescriptor();
 
     /*!
      * Return the first static internal field descriptor reference
@@ -51,27 +59,34 @@ class MetadataDescriptor
      */
     static const MetadataFieldDescriptor* GetMetadataFieldDescriptors(int& count);
 
+    static std::string FloatToString(float source, int precision);
+    /*!
+     * Convert integer range to string: low-high
+     * @param range Integer range: Highest into MSB, Lowest into LSB
+     * @return Converted string
+     */
+    static std::string IntToRange(int range);
     /*!
      * Convert a range X-Y to an int: Highest into MSB, Lowest into LSB (allow sorting by highest value)
      * @param range Range string
      * @param to destination int
      * @return True if the operation is successful. False otherwise.
      */
-    bool RangeToInt(const std::string& range, int& to);
+    static bool RangeToInt(const std::string& range, int& to);
     /*!
      * Convert int32 to Hexadecimal string
      * @param from Int32 value to convert to string
      * @param to Hexadecimal result string
      * @return True if the operation is successful. False otherwise.
      */
-    bool IntToHex(int from, std::string& to);
+    static bool IntToHex(int from, std::string& to);
     /*!
      * Convert Hexa string into int32
      * @param from Hexadecimal string
      * @param to Target int32
      * @return True if the operation is successful. False otherwise.
      */
-    bool HexToInt(const std::string& from, int& to);
+    static bool HexToInt(const std::string& from, int& to);
     /*!
      * Fast string to int conversion
      * @param from source string
@@ -80,7 +95,7 @@ class MetadataDescriptor
      * @param stop Stop char
      * @return True if the operation is successful. False otherwise.
      */
-    bool StringToInt(const std::string& from, int& to, int offset, char stop);
+    static bool StringToInt(const std::string& from, int& to, int offset, char stop);
     /*!
      * Fast string to int conversion
      * @param from source string
@@ -104,7 +119,9 @@ class MetadataDescriptor
     /*!
      * Default constructor
      */
-    MetadataDescriptor()
+    MetadataDescriptor(const std::string& defaultName)
+      : _Name(defaultName),
+        _Dirty(false)
     {
     }
 
@@ -172,17 +189,17 @@ class MetadataDescriptor
      * @param relativeTo Root path
      * @return True of the node has been successfully deserialized
      */
-    bool Deserialize(const Tree& from, const std::string& relativeTo);
+    bool Deserialize(const TreeNode& from, const std::string& relativeTo);
 
     /*!
      * Serialize internal data to XML node
      * @param relativeTo Root path
      * @return Serialized XML node
      */
-    Tree Serialize(const std::string& relativeTo);
+    TreeNode Serialize(const std::string& relativeTo) const;
 
     /*
-     * Accesors
+     * Accessors
      */
 
     Type Type() const { return _Type; }
@@ -212,4 +229,56 @@ class MetadataDescriptor
     int                RomCrc32()        const { return _RomCrc32; }
     bool               Favorite()        const { return _Favorite; }
     bool               Hidden()          const { return _Hidden; }
+
+    /*
+     * Defaults
+     */
+
+    bool IsDefaultName()            const { return _Default._Name        == _Name;        }
+    bool IsDefaultEmulator()        const { return _Default._Emulator    == _Emulator;    }
+    bool IsDefaultCore()            const { return _Default._Core        == _Core;        }
+    bool IsDefaultRatio()           const { return _Default._Ratio       == _Ratio;       }
+    bool IsDefaultDescription()     const { return _Default._Description == _Description; }
+    bool IsDefaultImage()           const { return _Default._Image       == _Image;       }
+    bool IsDefaultThumbnail()       const { return _Default._Thumbnail   == _Thumbnail;   }
+    bool IsDefaultDevelopper()      const { return _Default._Developper  == _Developper;  }
+    bool IsDefaultPublisher()       const { return _Default._Publisher   == _Publisher;   }
+    bool IsDefaultGenre()           const { return _Default._Genre       == _Genre;       }
+    bool IsDefaultRegion()          const { return _Default._Region      == _Region;      }
+    bool IsDefaultRomType()         const { return _Default._RomType     == _RomType;     }
+    bool IsDefaultRating()          const { return _Default._Rating      == _Rating;      }
+    bool IsDefaultPlayerRange()     const { return _Default._Players     == _Players;     }
+    bool IsDefaultReleaseDateEpoc() const { return _Default._ReleaseDate == _ReleaseDate; }
+    bool IsDefaultPlayCount()       const { return _Default._Playcount   == _Playcount;   }
+    bool IsDefaultLastPlayedEpoc()  const { return _Default._LastPlayed  == _LastPlayed;  }
+    bool IsDefaultRomCrc32()        const { return _Default._RomCrc32    == _RomCrc32;    }
+    bool IsDefaultFavorite()        const { return _Default._Favorite    == _Favorite;    }
+    bool IsDefaultHidden()          const { return _Default._Hidden      == _Hidden;      }
+
+    /*
+     * Convenient Accessors
+     */
+
+    bool IsGame()   const { return _Type == Type::Game;   }
+    bool IsFolder() const { return _Type == Type::Folder; }
+    bool IsDirty()  const { return _Dirty;                }
+
+    std::string PlayersAsString() const { return IntToRange(_Players); }
+    std::string FavoriteAsString() const { return _Favorite ? "true" : "false"; }
+    std::string RatingAsString() const { return FloatToString(_Rating, 4); }
+
+    /*
+     * Convenient Methods
+     */
+
+    static bool AreGames(const MetadataDescriptor& md1, const MetadataDescriptor& md2) { return (md1._Type == md2._Type) && (md1._Type == Type::Game); }
+    static bool AreFolders(const MetadataDescriptor& md1, const MetadataDescriptor& md2) { return (md1._Type == md2._Type) && (md1._Type == Type::Folder); }
+
+    /*
+     * Modifiers
+     */
+
+    void IncPlaycount() { _Playcount++; _Dirty = true; }
+    void SetLastplayedNow() { _LastPlayed = DateTime().ToEpochTime(); _Dirty = true; }
 };
+
