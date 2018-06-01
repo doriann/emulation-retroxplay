@@ -198,6 +198,13 @@ class MetadataDescriptor
      */
     TreeNode Serialize(const std::string& relativeTo) const;
 
+    /*!
+     * Merge value from the source metadata object into the current object
+     * current fields ate replaced only if they have their default value.
+     * @param source Metadata object from which to merge data
+     */
+    void Merge(const MetadataDescriptor& source);
+
     /*
      * Accessors
      */
