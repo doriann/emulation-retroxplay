@@ -342,9 +342,28 @@ public:
    *          2017-03-16 16:05:33-0930 => 2017-03-17 01:35:33+0000
    * @return UTC DateTime
    */
-  DateTime ToUtc() const { return *this + TimeSpan(_TimeZone * 15, 0, 0); }
+  DateTime ToUtc() const
+  {
+    DateTime result(*this);
+    result -= TimeSpan(_TimeZone * 15, 0, 0);
+    result._TimeZone = 0;
+    return result;
+  }
 
   /*!
+   * Return the current DateTime converted to Local Time
+   * @return UTC DateTime
+   */
+  DateTime ToLocal() const
+  {
+    int localtz = _SystemDateTimeInterface->LoadTimeZone();
+    DateTime result(*this);
+    result += TimeSpan((localtz - _TimeZone) * 15, 0, 0);
+    result._TimeZone = localtz;
+    return result;
+  }
+
+    /*!
    * Add a Timespan to the current DateTime
    * @param ts TimeSpan to add
    * @return The current DateTime
