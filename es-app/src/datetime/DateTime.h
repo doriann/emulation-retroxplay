@@ -138,7 +138,7 @@ public:
   {
     _SystemDateTimeInterface = interface;
     if (interface != nullptr)
-      interface->LoadTimeZone();
+      _DefaultTimeZone = interface->LoadTimeZone();
   }
 
   /*!
@@ -356,7 +356,7 @@ public:
    */
   DateTime ToLocal() const
   {
-    int localtz = _SystemDateTimeInterface->LoadTimeZone();
+    int localtz = (_SystemDateTimeInterface != nullptr) ? _SystemDateTimeInterface->LoadTimeZone() : 0;
     DateTime result(*this);
     result += TimeSpan((localtz - _TimeZone) * 15, 0, 0);
     result._TimeZone = localtz;
@@ -494,21 +494,21 @@ public:
     _Month += month;
     if (_Month < 1)
     {
-      _Year -= (--_Month / 12) + 1;    // Month to 0-11
-      _Month = (12 + _Month % 12) + 1; // Month to 1-12
+      _Year -= (--_Month / 12) + 1;            // Month to 0-11
+      _Month = (char)((12 + _Month % 12) + 1); // Month to 1-12
     }
     if (_Month > 12)
     {
-      _Year += (--_Month / 12);   // Month to 0-11
-      _Month = (_Month % 12) + 1; // Month to 1-12
+      _Year += (--_Month / 12);           // Month to 0-11
+      _Month = (char)((_Month % 12) + 1); // Month to 1-12
     }
-    if (_Day > DayPerMonth(_Month, _Year)) _Day = DayPerMonth(_Month, _Year);
+    if (_Day > DayPerMonth(_Month, _Year)) _Day = (char)DayPerMonth(_Month, _Year);
     return *this;
   }
   DateTime& AddYears(int years)
   {
     _Year += years;
-    if (_Day > DayPerMonth(_Month, _Year)) _Day = DayPerMonth(_Month, _Year); // 29 february case
+    if (_Day > DayPerMonth(_Month, _Year)) _Day = (char)DayPerMonth(_Month, _Year); // 29 february case
     return *this;
   }
 

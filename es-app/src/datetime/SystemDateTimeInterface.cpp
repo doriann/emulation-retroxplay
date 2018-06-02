@@ -14,7 +14,7 @@ static class SystemDateTimeInterface : public ISystemDateTimeInterface
     {
       time_t t = time(NULL);
       struct tm* lt = localtime(&t);
-      return (char)(lt->tm_gmtoff / (15 * 60* 60));
+      return (char)((lt->tm_gmtoff / (60* 60)) * 4);
     }
 
     void SaveTimeZone(char tz) override
@@ -26,12 +26,13 @@ static class SystemDateTimeInterface : public ISystemDateTimeInterface
     {
       time_t t = time(NULL);
       struct tm* lt = localtime(&t);
-      second = lt->tm_sec;
-      minute = lt->tm_min;
-      hour   = lt->tm_hour;
-      day    = lt->tm_mday;
-      month  = lt->tm_mon + 1;
-      year   = lt->tm_year + 1900;
+      millis = 0;
+      second = (char)lt->tm_sec;
+      minute = (char)lt->tm_min;
+      hour   = (char)lt->tm_hour;
+      day    = (char)lt->tm_mday;
+      month  = (char)(lt->tm_mon + 1);
+      year   = (short)(lt->tm_year + 1900);
       return true;
     }
 
@@ -50,7 +51,7 @@ static class SystemDateTimeInterface : public ISystemDateTimeInterface
 bool SystemDateTimeInterface::Initialize()
 {
   DateTime::SetSystemInterface(&SystemDateTime);
-  DateTime dt;
+  return true;
 }
 
 bool SystemDateTimeInterface::Initialized = SystemDateTimeInterface::Initialize();
