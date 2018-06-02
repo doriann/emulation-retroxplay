@@ -10,7 +10,7 @@ class MetadataDescriptor
 {
   public:
     //! Metadata type
-    enum class Type : char
+    enum class ObjectType : char
     {
       Game,
       Folder,
@@ -33,7 +33,7 @@ class MetadataDescriptor
     std::string _Description;  //!< Description, multiline text
     std::string _Image;        //!< Image path
     std::string _Thumbnail;    //!< Thumbnail path
-    std::string _Developper;   //!< Developper name
+    std::string _Developer;    //!< Developer name
     std::string _Publisher;    //!< Publisher name
     std::string _Genre;        //!< Genres, comma separated
     std::string _Region;       //!< Rom/Game Region
@@ -48,16 +48,17 @@ class MetadataDescriptor
     bool        _Hidden;       //!< Hidden game
     bool        _Dirty;        //!< Dirty flag (modified data flag)
 
-    Type        _Type;         //!< Metadata type
+    ObjectType  _Type;         //!< Metadata type
 
     static MetadataDescriptor BuildDefaultValueMetadataDescriptor();
 
     /*!
      * Return the first static internal field descriptor reference
+     * @param Type ObjectType from which to retrieve
      * @param count Number of actual field descriptor available
      * @return first static internal field descriptor reference
      */
-    static const MetadataFieldDescriptor* GetMetadataFieldDescriptors(int& count);
+    static const MetadataFieldDescriptor* GetMetadataFieldDescriptors(ObjectType type, int& count);
 
     static std::string FloatToString(float source, int precision);
     /*!
@@ -137,7 +138,7 @@ class MetadataDescriptor
         _Description (source._Description),
         _Image       (source._Image      ),
         _Thumbnail   (source._Thumbnail  ),
-        _Developper  (source._Developper ),
+        _Developer   (source._Developer  ),
         _Publisher   (source._Publisher  ),
         _Genre       (source._Genre      ),
         _Region      (source._Region     ),
@@ -166,7 +167,7 @@ class MetadataDescriptor
         _Description (std::move(source._Description)),
         _Image       (std::move(source._Image      )),
         _Thumbnail   (std::move(source._Thumbnail  )),
-        _Developper  (std::move(source._Developper )),
+        _Developer   (std::move(source._Developer  )),
         _Publisher   (std::move(source._Publisher  )),
         _Genre       (std::move(source._Genre      )),
         _Region      (std::move(source._Region     )),
@@ -181,6 +182,36 @@ class MetadataDescriptor
         _Hidden      (          source._Hidden     ),
         _Type        (          source._Type       )
     {
+    }
+
+    /*!
+     * Assignment operator - Required by STL objects since a copy operator is defined
+     * @param source Source to copy data from
+     */
+    MetadataDescriptor& operator = (const MetadataDescriptor& source)
+    {
+      _Name        = source._Name       ;
+      _Emulator    = source._Emulator   ;
+      _Core        = source._Core       ;
+      _Ratio       = source._Ratio      ;
+      _Description = source._Description;
+      _Image       = source._Image      ;
+      _Thumbnail   = source._Thumbnail  ;
+      _Developer   = source._Developer  ;
+      _Publisher   = source._Publisher  ;
+      _Genre       = source._Genre      ;
+      _Region      = source._Region     ;
+      _RomType     = source._RomType    ;
+      _Rating      = source._Rating     ;
+      _Players     = source._Players    ;
+      _ReleaseDate = source._ReleaseDate;
+      _Playcount   = source._Playcount  ;
+      _LastPlayed  = source._LastPlayed ;
+      _RomCrc32    = source._RomCrc32   ;
+      _Favorite    = source._Favorite   ;
+      _Hidden      = source._Hidden     ;
+      _Type        = source._Type       ;
+      return *this;
     }
 
     /*!
@@ -209,7 +240,7 @@ class MetadataDescriptor
      * Accessors
      */
 
-    Type Type() const { return _Type; }
+    ObjectType Type() const { return _Type; }
 
     const std::string& Name()        const { return _Name;        }
     const std::string& Emulator()    const { return _Emulator;    }
@@ -218,7 +249,7 @@ class MetadataDescriptor
     const std::string& Description() const { return _Description; }
     const std::string& Image()       const { return _Image;       }
     const std::string& Thumbnail()   const { return _Thumbnail;   }
-    const std::string& Developper()  const { return _Developper;  }
+    const std::string& Developer()   const { return _Developer;   }
     const std::string& Publisher()   const { return _Publisher;   }
     const std::string& Genre()       const { return _Genre;       }
     const std::string& Region()      const { return _Region;      }
@@ -238,6 +269,68 @@ class MetadataDescriptor
     bool               Hidden()          const { return _Hidden; }
 
     /*
+     * String accessors
+     */
+
+    std::string NameAsString()        const { return _Name;        }
+    std::string EmulatorAsString()    const { return _Emulator;    }
+    std::string CoreAsString()        const { return _Core;        }
+    std::string RatioAsString()       const { return _Ratio;       }
+    std::string DescriptionAsString() const { return _Description; }
+    std::string ImageAsString()       const { return _Image;       }
+    std::string ThumbnailAsString()   const { return _Thumbnail;   }
+    std::string DeveloperAsString()   const { return _Developer;   }
+    std::string PublisherAsString()   const { return _Publisher;   }
+    std::string GenreAsString()       const { return _Genre;       }
+    std::string RegionAsString()      const { return _Region;      }
+    std::string RomTypeAsString()     const { return _RomType;     }
+
+    std::string RatingAsString()      const { return std::move(FloatToString(_Rating, 4));                     }
+    std::string PlayersAsString()     const { return std::move(IntToRange(_Players));                          }
+    std::string ReleaseDateAsString() const { return std::move(DateTime((long long)_ReleaseDate).ToISO8601()); }
+    std::string PlayCountAsString()   const { return std::move(std::to_string(_Playcount));                    }
+    std::string LastPlayedAsString()  const { return std::move(DateTime((long long)_LastPlayed).ToISO8601());  }
+    std::string FavoriteAsString()    const { return std::move(_Favorite ? "true" : "false");                  }
+    std::string RomCrc32AsString()    const { std::string r; IntToHex(_RomCrc32, r); return std::move(r);      }
+    std::string HiddenAsString()      const { return std::move(_Hidden ? "true" : "false");                    }
+
+    /*
+     * Setters
+     */
+
+    void SetName(const std::string& name) { _Name = name; _Dirty = true; }
+    void SetEmulator(const std::string& emulator) { _Emulator = emulator; _Dirty = true; }
+    void SetCore(const std::string& core) { _Core = core; _Dirty = true; }
+    void SetRatio(const std::string& ratio) { _Ratio = ratio; _Dirty = true; }
+    void SetDescription(const std::string& description) { _Description = description; _Dirty = true; }
+    void SetImagePath(const std::string& image) { _Image = image; _Dirty = true; }
+    void SetThumbnailPath(const std::string& thumbnail) { _Thumbnail = thumbnail; _Dirty = true; }
+    void SetReleaseDate(const DateTime& releasedate) { _ReleaseDate = releasedate.ToEpochTime(); _Dirty = true; }
+    void SetDeveloper(const std::string& developer) { _Developer = developer; _Dirty = true; }
+    void SetPublisher(const std::string& publisher) { _Publisher = publisher; _Dirty = true; }
+    void SetGenre(const std::string& genre) { _Genre = genre; _Dirty = true; }
+    void SetRating(float rating) { _Rating = rating; _Dirty = true; }
+    void SetPlayers(int min, int max) { _Players = (max << 16) + min; _Dirty = true; }
+    void SetRegion(const std::string& region) { _Region = region; _Dirty = true; }
+    void SetRomType(const std::string& romtype) { _RomType = romtype; _Dirty = true; }
+    void SetRomCrc32(int romcrc32) { _RomCrc32 = romcrc32; _Dirty = true; }
+    void SetFavorite(bool favorite) { _Favorite = favorite; _Dirty = true; }
+    void SetHidden(bool hidden) { _Hidden = hidden; _Dirty = true; }
+
+    /*
+     * String setters
+     */
+
+    void SetReleaseDateAsString(const std::string& releasedate) { _ReleaseDate = (int)DateTime(releasedate).ToEpochTime(); _Dirty = true;       }
+    void SetRatingAsString(const std::string& rating)           { float f = 0.0f; if (StringToFloat(rating, f)) { _Rating = f; _Dirty = true; } }
+    void SetPlayersAsString(const std::string& players)         { int p = 0; if (RangeToInt(players, p)) { _Players = p;_Dirty = true; }        }
+    void SetFavoriteAsString(const std::string& favorite)       { _Favorite = (favorite == "true");                                             }
+    void SetHiddenAsString(const std::string& hidden)           { _Hidden = (hidden == "true");                                                 }
+    void SetRomCrc32AsString(const std::string& romcrc32)       { int c; if (HexToInt(romcrc32, c)) { _RomCrc32 = c; _Dirty = true; }           }
+    void SetPlayCountAsString(const std::string& playcount)     { int p; if (StringToInt(playcount, p)) { _Playcount = p; _Dirty = true; }      }
+    void SetLastPlayedAsString(const std::string& lastplayed)   { _LastPlayed = (int)DateTime(lastplayed).ToEpochTime(); _Dirty = true;         }
+
+    /*
      * Defaults
      */
 
@@ -248,7 +341,7 @@ class MetadataDescriptor
     bool IsDefaultDescription()     const { return _Default._Description == _Description; }
     bool IsDefaultImage()           const { return _Default._Image       == _Image;       }
     bool IsDefaultThumbnail()       const { return _Default._Thumbnail   == _Thumbnail;   }
-    bool IsDefaultDevelopper()      const { return _Default._Developper  == _Developper;  }
+    bool IsDefaultDeveloper()       const { return _Default._Developer   == _Developer;   }
     bool IsDefaultPublisher()       const { return _Default._Publisher   == _Publisher;   }
     bool IsDefaultGenre()           const { return _Default._Genre       == _Genre;       }
     bool IsDefaultRegion()          const { return _Default._Region      == _Region;      }
@@ -266,26 +359,33 @@ class MetadataDescriptor
      * Convenient Accessors
      */
 
-    bool IsGame()   const { return _Type == Type::Game;   }
-    bool IsFolder() const { return _Type == Type::Folder; }
+    bool IsGame()   const { return _Type == ObjectType::Game;   }
+    bool IsFolder() const { return _Type == ObjectType::Folder; }
     bool IsDirty()  const { return _Dirty;                }
-
-    std::string PlayersAsString() const { return IntToRange(_Players); }
-    std::string FavoriteAsString() const { return _Favorite ? "true" : "false"; }
-    std::string RatingAsString() const { return FloatToString(_Rating, 4); }
 
     /*
      * Convenient Methods
      */
 
-    static bool AreGames(const MetadataDescriptor& md1, const MetadataDescriptor& md2) { return (md1._Type == md2._Type) && (md1._Type == Type::Game); }
-    static bool AreFolders(const MetadataDescriptor& md1, const MetadataDescriptor& md2) { return (md1._Type == md2._Type) && (md1._Type == Type::Folder); }
+    static bool AreGames(const MetadataDescriptor& md1, const MetadataDescriptor& md2) { return (md1._Type == md2._Type) && (md1._Type == ObjectType::Game); }
+    static bool AreFolders(const MetadataDescriptor& md1, const MetadataDescriptor& md2) { return (md1._Type == md2._Type) && (md1._Type == ObjectType::Folder); }
 
     /*
-     * Modifiers
+     * Special modifiers
      */
 
     void IncPlaycount() { _Playcount++; _Dirty = true; }
     void SetLastplayedNow() { _LastPlayed = DateTime().ToEpochTime(); _Dirty = true; }
+
+    /*
+     * Metadata FieldManagement Methods
+     */
+
+    /*!
+     * Return the first static internal field descriptor reference
+     * @param count Number of actual field descriptor available
+     * @return first static internal field descriptor reference
+     */
+    const MetadataFieldDescriptor* GetMetadataFieldDescriptors(int& count) { return GetMetadataFieldDescriptors(_Type, count); }
 };
 
