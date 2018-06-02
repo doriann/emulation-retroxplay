@@ -22,9 +22,10 @@
 const int logoBuffersLeft[] = { -5, -2, -1 };
 const int logoBuffersRight[] = { 1, 2, 5 };
 
-SystemView::SystemView(Window* window) : IList<SystemViewData, SystemData*>(window, LIST_SCROLL_STYLE_SLOW, LIST_ALWAYS_LOOP),
-																				mViewNeedsReload(true),
-																				mSystemInfo(window, "SYSTEM INFO", Font::get(FONT_SIZE_SMALL), 0x33333300, ALIGN_CENTER)
+SystemView::SystemView(Window* window)
+	: IList<SystemViewData, SystemData*>(window, LIST_SCROLL_STYLE_SLOW, LIST_ALWAYS_LOOP),
+ 	  mSystemInfo(window, "SYSTEM INFO", Font::get(FONT_SIZE_SMALL), 0x33333300, ALIGN_CENTER),
+    mViewNeedsReload(true)
 {
 	mCamOffset = 0;
 	mExtrasCamOffset = 0;
@@ -254,7 +255,8 @@ void SystemView::update(int deltaTime)
 
 void SystemView::onCursorChanged(const CursorState& state)
 {
-    
+	(void)state;
+
 	if(lastSystem != getSelected()){
 		lastSystem = getSelected();
 		AudioManager::getInstance()->themeChanged(getSelected()->getTheme());
@@ -445,10 +447,12 @@ HelpStyle SystemView::getHelpStyle()
 	HelpStyle style;
 	style.applyTheme(mEntries.at(mCursor).object->getTheme(), "system");
 	return style;
-	}	
+}
 
 void  SystemView::onThemeChanged(const std::shared_ptr<ThemeData>& theme)
 {
+	(void)theme;
+
 	LOG(LogDebug) << "SystemView::onThemeChanged()";
 	mViewNeedsReload = true;
 	populate();

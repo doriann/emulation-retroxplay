@@ -7,15 +7,17 @@
 #include "Locale.h"
 
 DetailedGameListView::DetailedGameListView(Window* window, FileData* root, SystemData* system) : 
-	BasicGameListView(window, root), 
-	mDescContainer(window), mDescription(window), 
-	mImage(window), mSystem(system), 
+	BasicGameListView(window, root),
+	mImage(window),
 
 	mLblRating(window), mLblReleaseDate(window), mLblDeveloper(window), mLblPublisher(window), 
 	mLblGenre(window), mLblPlayers(window), mLblLastPlayed(window), mLblPlayCount(window), mLblFavorite(window),
 
 	mRating(window), mReleaseDate(window), mDeveloper(window), mPublisher(window),
-	mGenre(window), mPlayers(window), mLastPlayed(window), mPlayCount(window), mFavorite(window)
+	mGenre(window), mPlayers(window), mLastPlayed(window), mPlayCount(window), mFavorite(window),
+
+  mDescContainer(window),
+	mDescription(window), mSystem(system)
 {
 	//mHeaderImage.setPosition(mSize.x() * 0.25f, 0);
 
@@ -24,7 +26,7 @@ DetailedGameListView::DetailedGameListView(Window* window, FileData* root, Syste
 	mList.setPosition(mSize.x() * (0.50f + padding), mList.getPosition().y());
 	mList.setSize(mSize.x() * (0.50f - padding), mList.getSize().y());
 	mList.setAlignment(TextListComponent<FileData*>::ALIGN_LEFT);
-	mList.setCursorChangedCallback([&](const CursorState& state) { updateInfoPanel(); });
+	mList.setCursorChangedCallback([&](const CursorState& state) { (void)state; updateInfoPanel(); });
 
 	// image
 	mImage.setOrigin(0.5f, 0.5f);
@@ -162,7 +164,7 @@ void DetailedGameListView::initMDLabels()
 	std::vector<TextComponent*> components = getMDLabels();
 
 	const unsigned int colCount = 2;
-	const unsigned int rowCount = components.size() / 2;
+	const unsigned int rowCount = (unsigned int)components.size() / 2;
 
 	Vector3f start(mSize.x() * 0.01f, mSize.y() * 0.625f, 0.0f);
 	

@@ -111,13 +111,14 @@ std::string InputConfig::getSDLPowerLevel()
 			return "\uF1b4";
 	}
 
+  return "\uF1b6";
 }
 
 std::string InputConfig::getSysPowerLevel()
 {
-	SDL_Joystick* joy;
+	//SDL_Joystick* joy;
 	//joy = InputManager::getInstance()->getJoystickByJoystickID(getDeviceId());
-	joy = SDL_JoystickOpen(getDeviceId());
+	/*joy = */SDL_JoystickOpen(getDeviceId());
 	return "\uF1be";
 }
 

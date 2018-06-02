@@ -281,7 +281,7 @@ bool GuiTextEditPopupKeyboard::input(InputConfig* config, Input input)
 }
 
 void GuiTextEditPopupKeyboard::update(int deltatime) {
-
+	(void)deltatime;
 }
 
 // Shifts the keys when user hits the shift button.

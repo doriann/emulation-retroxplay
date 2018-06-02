@@ -210,9 +210,11 @@ std::vector<std::string> getMusicIn(const std::string &path) {
         // File matches, store it
         all_matching_files.push_back(i->path().string());
     }
+
+    return std::move(all_matching_files);
 }
 
-std::shared_ptr<Music> AudioManager::getRandomMusic(std::string themeSoundDirectory) {
+std::shared_ptr<Music> AudioManager::getRandomMusic(const std::string& themeSoundDirectory) {
     // 1 check in User music directory
     std::vector<std::string> musics = getMusicIn(Settings::getInstance()->getString("MusicDirectory"));
     if (musics.empty()) {

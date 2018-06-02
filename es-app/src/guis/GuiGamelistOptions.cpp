@@ -10,8 +10,8 @@
 #include "MenuMessages.h"
 
 GuiGamelistOptions::GuiGamelistOptions(Window* window, SystemData* system) : GuiComponent(window), 
-	mSystem(system), 
-  mMenu(window, _("OPTIONS").c_str())
+  mMenu(window, _("OPTIONS").c_str()),
+mSystem(system)
 {
 	auto menuTheme = MenuThemeData::getInstance()->getCurrentTheme();
 	addChild(&mMenu);
@@ -98,7 +98,7 @@ GuiGamelistOptions::~GuiGamelistOptions()
         }
     }else {
         Window *window = mWindow;
-        int size = getGamelist()->getRoot()->getChildren().size();
+        //int size = getGamelist()->getRoot()->getChildren().size();
         if (getGamelist()->getRoot()->getChildren().size() == 0) {
             ViewController::get()->goToStart();
 			window->renderShutdownScreen();

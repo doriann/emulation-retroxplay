@@ -10,6 +10,8 @@ std::ostream& out = std::cout;
 
 void handle_interrupt_signal(int p)
 {
+	(void)p;
+
 	sleep(50);
 
 	LOG(LogInfo) << "Interrupt received during scrape...";
@@ -118,7 +120,7 @@ int run_scraper_cmdline()
 	out << "It is highly recommended you use manual mode unless you have a very large collection.\n";
 	out << "Scrape in manual mode? (y/n)\n";
 
-	std::string manual_mode_str;
+	/*std::string manual_mode_str;
 	std::getline(std::cin, manual_mode_str);
 
 	bool manual_mode = false;
@@ -129,7 +131,7 @@ int run_scraper_cmdline()
 		out << "Scraping in manual mode!\n";
 	}else{
 		out << "Scraping in automatic mode!\n";
-	}
+	}*/
 
 	//==================================================================================
 	//scraping

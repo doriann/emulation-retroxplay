@@ -27,6 +27,8 @@ GuiUpdate::~GuiUpdate() {
 }
 
 bool GuiUpdate::input(InputConfig *config, Input input) {
+    (void)config;
+    (void)input;
     return false;
 }
 
