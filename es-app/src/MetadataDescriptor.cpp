@@ -231,7 +231,10 @@ bool MetadataDescriptor::Deserialize(const TreeNode& from, const std::string& re
     const MetadataFieldDescriptor& field = fields[count];
 
     // Get field data as string
-    std::string value = from.second.get(field.Key(), field.DefaultValue());
+    const std::string& defaultStringValue = field.DefaultValue();
+    std::string value = from.second.get(field.Key(), defaultStringValue);
+    // Ignore default values
+    if (value == defaultStringValue) continue;
 
     // Get neutral target
     void* target = ((unsigned char*)this) + field.Offset();
