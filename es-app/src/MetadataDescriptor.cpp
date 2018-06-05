@@ -11,6 +11,13 @@
 const std::string MetadataDescriptor::GameNodeIdentifier = "game";
 const std::string MetadataDescriptor::FolderNodeIdentifier = "folder";
 
+#ifdef _METADATA_STATS_
+int MetadataDescriptor::LivingClasses = 0;
+int MetadataDescriptor::LivingNone = 0;
+int MetadataDescriptor::LivingFolders = 0;
+int MetadataDescriptor::LivingGames = 0;
+#endif
+
 const MetadataFieldDescriptor* MetadataDescriptor::GetMetadataFieldDescriptors(MetadataDescriptor::ObjectType type, int& count)
 {
   switch(type)
@@ -21,26 +28,26 @@ const MetadataFieldDescriptor* MetadataDescriptor::GetMetadataFieldDescriptors(M
       // offsetof accessing private fields
       static const MetadataFieldDescriptor _GameMetadataDescriptors[] =
       {
-        MetadataFieldDescriptor("name"       , ""        , _("Name")        , _("enter game name")             , (int)offsetof(MetadataDescriptor, _Name)       , MetadataFieldDescriptor::DataType::String, &MetadataDescriptor::IsDefaultName           , &MetadataDescriptor::NameAsString        , &MetadataDescriptor::SetName                , false, true),
-        MetadataFieldDescriptor("rating"     , "0.0"     , _("Rating")      , _("enter rating")                , (int)offsetof(MetadataDescriptor, _Rating)     , MetadataFieldDescriptor::DataType::Rating, &MetadataDescriptor::IsDefaultRating         , &MetadataDescriptor::RatingAsString      , &MetadataDescriptor::SetRatingAsString      , false, true),
-        MetadataFieldDescriptor("favorite"   , "false"   , _("Favorite")    , _("enter favorite")              , (int)offsetof(MetadataDescriptor, _Favorite)   , MetadataFieldDescriptor::DataType::Bool  , &MetadataDescriptor::IsDefaultFavorite       , &MetadataDescriptor::FavoriteAsString    , &MetadataDescriptor::SetFavoriteAsString    , false, true),
-        MetadataFieldDescriptor("hidden"     , "false"   , _("Hidden")      , _("set hidden")                  , (int)offsetof(MetadataDescriptor, _Hidden)     , MetadataFieldDescriptor::DataType::Bool  , &MetadataDescriptor::IsDefaultHidden         , &MetadataDescriptor::HiddenAsString      , &MetadataDescriptor::SetHiddenAsString      , false, true),
-        MetadataFieldDescriptor("emulator"   , "default" , _("Emulator")    , _("enter emulator")              , (int)offsetof(MetadataDescriptor, _Emulator)   , MetadataFieldDescriptor::DataType::List  , &MetadataDescriptor::IsDefaultEmulator       , &MetadataDescriptor::EmulatorAsString    , &MetadataDescriptor::SetEmulator            , false, true),
-        MetadataFieldDescriptor("core"       , "default" , _("Core")        , _("enter core")                  , (int)offsetof(MetadataDescriptor, _Core)       , MetadataFieldDescriptor::DataType::List  , &MetadataDescriptor::IsDefaultCore           , &MetadataDescriptor::CoreAsString        , &MetadataDescriptor::SetCore                , false, true),
-        MetadataFieldDescriptor("ratio"      , "auto"    , _("Ratio")       , _("enter ratio")                 , (int)offsetof(MetadataDescriptor, _Ratio)      , MetadataFieldDescriptor::DataType::List  , &MetadataDescriptor::IsDefaultRatio          , &MetadataDescriptor::RatioAsString       , &MetadataDescriptor::SetRatio               , false, true),
-        MetadataFieldDescriptor("desc"       , ""        , _("Description") , _("enter description")           , (int)offsetof(MetadataDescriptor, _Description), MetadataFieldDescriptor::DataType::Text  , &MetadataDescriptor::IsDefaultDescription    , &MetadataDescriptor::DescriptionAsString , &MetadataDescriptor::SetDescription         , false, false),
-        MetadataFieldDescriptor("image"      , ""        , _("Image")       , _("enter path to image")         , (int)offsetof(MetadataDescriptor, _Image)      , MetadataFieldDescriptor::DataType::Path  , &MetadataDescriptor::IsDefaultImage          , &MetadataDescriptor::ImageAsString       , &MetadataDescriptor::SetImagePath           , false, false),
-        MetadataFieldDescriptor("thumbnail"  , ""        , _("Thumbnail")   , _("enter path to thumbnail")     , (int)offsetof(MetadataDescriptor, _Thumbnail)  , MetadataFieldDescriptor::DataType::Path  , &MetadataDescriptor::IsDefaultThumbnail      , &MetadataDescriptor::ThumbnailAsString   , &MetadataDescriptor::SetThumbnailPath       , false, false),
-        MetadataFieldDescriptor("releasedate", ""        , _("Release date"), _("enter release date")          , (int)offsetof(MetadataDescriptor, _ReleaseDate), MetadataFieldDescriptor::DataType::Date  , &MetadataDescriptor::IsDefaultReleaseDateEpoc, &MetadataDescriptor::ReleaseDateAsString , &MetadataDescriptor::SetReleaseDateAsString , false, false),
-        MetadataFieldDescriptor("developer"  , "unknown" , _("Developer")   , _("enter game developer")        , (int)offsetof(MetadataDescriptor, _Developer)  , MetadataFieldDescriptor::DataType::String, &MetadataDescriptor::IsDefaultDeveloper      , &MetadataDescriptor::DeveloperAsString   , &MetadataDescriptor::SetDeveloper           , false, false),
-        MetadataFieldDescriptor("publisher"  , "unknown" , _("Publisher")   , _("enter game publisher")        , (int)offsetof(MetadataDescriptor, _Publisher)  , MetadataFieldDescriptor::DataType::String, &MetadataDescriptor::IsDefaultPublisher      , &MetadataDescriptor::PublisherAsString   , &MetadataDescriptor::SetPublisher           , false, false),
-        MetadataFieldDescriptor("genre"      , "unknown" , _("Genre")       , _("enter game genre")            , (int)offsetof(MetadataDescriptor, _Genre)      , MetadataFieldDescriptor::DataType::String, &MetadataDescriptor::IsDefaultGenre          , &MetadataDescriptor::GenreAsString       , &MetadataDescriptor::SetGenre               , false, false),
-        MetadataFieldDescriptor("players"    , "1"       , _("Players")     , _("enter number of players")     , (int)offsetof(MetadataDescriptor, _Players)    , MetadataFieldDescriptor::DataType::Range , &MetadataDescriptor::IsDefaultPlayerRange    , &MetadataDescriptor::PlayersAsString     , &MetadataDescriptor::SetPlayersAsString     , false, false),
-        MetadataFieldDescriptor("region"     , ""        , _("Region")      , _("enter region")                , (int)offsetof(MetadataDescriptor, _Region)     , MetadataFieldDescriptor::DataType::String, &MetadataDescriptor::IsDefaultRegion         , &MetadataDescriptor::RegionAsString      , &MetadataDescriptor::SetRegion              , false, false),
-        MetadataFieldDescriptor("romtype"    , "Original", _("Romtype")     , _("enter romtype")               , (int)offsetof(MetadataDescriptor, _RomType)    , MetadataFieldDescriptor::DataType::String, &MetadataDescriptor::IsDefaultRomType        , &MetadataDescriptor::RomTypeAsString     , &MetadataDescriptor::SetRomType             , false, false),
-        MetadataFieldDescriptor("playcount"  , "0"       , _("Play count")  , _("enter number of times played"), (int)offsetof(MetadataDescriptor, _Playcount)  , MetadataFieldDescriptor::DataType::Int   , &MetadataDescriptor::IsDefaultPlayCount      , &MetadataDescriptor::PlayCountAsString   , &MetadataDescriptor::SetPlayCountAsString   , true , false),
-        MetadataFieldDescriptor("lastplayed" , ""        , _("Last played") , _("enter last played date")      , (int)offsetof(MetadataDescriptor, _LastPlayed) , MetadataFieldDescriptor::DataType::Date  , &MetadataDescriptor::IsDefaultLastPlayedEpoc , &MetadataDescriptor::LastPlayedAsString  , &MetadataDescriptor::SetLastPlayedAsString  , true , false),
-        MetadataFieldDescriptor("hash"       , "0"       , _("Rom Crc32")   , _("enter rom crc32")             , (int)offsetof(MetadataDescriptor, _RomCrc32)   , MetadataFieldDescriptor::DataType::Crc32 , &MetadataDescriptor::IsDefaultRomCrc32       , &MetadataDescriptor::RomCrc32AsString    , &MetadataDescriptor::SetRomCrc32AsString    , true , false),
+        MetadataFieldDescriptor("name"       , ""        , _("Name")        , _("enter game name")             , (int)offsetof(MetadataDescriptor, _Name)       , MetadataFieldDescriptor::DataType::String , &MetadataDescriptor::IsDefaultName           , &MetadataDescriptor::NameAsString        , &MetadataDescriptor::SetName                , false, true),
+        MetadataFieldDescriptor("rating"     , "0.0"     , _("Rating")      , _("enter rating")                , (int)offsetof(MetadataDescriptor, _Rating)     , MetadataFieldDescriptor::DataType::Rating , &MetadataDescriptor::IsDefaultRating         , &MetadataDescriptor::RatingAsString      , &MetadataDescriptor::SetRatingAsString      , false, true),
+        MetadataFieldDescriptor("favorite"   , "false"   , _("Favorite")    , _("enter favorite")              , (int)offsetof(MetadataDescriptor, _Favorite)   , MetadataFieldDescriptor::DataType::Bool   , &MetadataDescriptor::IsDefaultFavorite       , &MetadataDescriptor::FavoriteAsString    , &MetadataDescriptor::SetFavoriteAsString    , false, true),
+        MetadataFieldDescriptor("hidden"     , "false"   , _("Hidden")      , _("set hidden")                  , (int)offsetof(MetadataDescriptor, _Hidden)     , MetadataFieldDescriptor::DataType::Bool   , &MetadataDescriptor::IsDefaultHidden         , &MetadataDescriptor::HiddenAsString      , &MetadataDescriptor::SetHiddenAsString      , false, true),
+        MetadataFieldDescriptor("emulator"   , "default" , _("Emulator")    , _("enter emulator")              , (int)offsetof(MetadataDescriptor, _Emulator)   , MetadataFieldDescriptor::DataType::PList  , &MetadataDescriptor::IsDefaultEmulator       , &MetadataDescriptor::EmulatorAsString    , &MetadataDescriptor::SetEmulator            , false, true),
+        MetadataFieldDescriptor("core"       , "default" , _("Core")        , _("enter core")                  , (int)offsetof(MetadataDescriptor, _Core)       , MetadataFieldDescriptor::DataType::PList  , &MetadataDescriptor::IsDefaultCore           , &MetadataDescriptor::CoreAsString        , &MetadataDescriptor::SetCore                , false, true),
+        MetadataFieldDescriptor("ratio"      , "auto"    , _("Ratio")       , _("enter ratio")                 , (int)offsetof(MetadataDescriptor, _Ratio)      , MetadataFieldDescriptor::DataType::PList  , &MetadataDescriptor::IsDefaultRatio          , &MetadataDescriptor::RatioAsString       , &MetadataDescriptor::SetRatio               , false, true),
+        MetadataFieldDescriptor("desc"       , ""        , _("Description") , _("enter description")           , (int)offsetof(MetadataDescriptor, _Description), MetadataFieldDescriptor::DataType::Text   , &MetadataDescriptor::IsDefaultDescription    , &MetadataDescriptor::DescriptionAsString , &MetadataDescriptor::SetDescription         , false, false),
+        MetadataFieldDescriptor("image"      , ""        , _("Image")       , _("enter path to image")         , (int)offsetof(MetadataDescriptor, _Image)      , MetadataFieldDescriptor::DataType::Path   , &MetadataDescriptor::IsDefaultImage          , &MetadataDescriptor::ImageAsString       , &MetadataDescriptor::SetImagePath           , false, false),
+        MetadataFieldDescriptor("thumbnail"  , ""        , _("Thumbnail")   , _("enter path to thumbnail")     , (int)offsetof(MetadataDescriptor, _Thumbnail)  , MetadataFieldDescriptor::DataType::PPath  , &MetadataDescriptor::IsDefaultThumbnail      , &MetadataDescriptor::ThumbnailAsString   , &MetadataDescriptor::SetThumbnailPath       , false, false),
+        MetadataFieldDescriptor("releasedate", ""        , _("Release date"), _("enter release date")          , (int)offsetof(MetadataDescriptor, _ReleaseDate), MetadataFieldDescriptor::DataType::Date   , &MetadataDescriptor::IsDefaultReleaseDateEpoc, &MetadataDescriptor::ReleaseDateAsString , &MetadataDescriptor::SetReleaseDateAsString , false, false),
+        MetadataFieldDescriptor("developer"  , "unknown" , _("Developer")   , _("enter game developer")        , (int)offsetof(MetadataDescriptor, _Developer)  , MetadataFieldDescriptor::DataType::String , &MetadataDescriptor::IsDefaultDeveloper      , &MetadataDescriptor::DeveloperAsString   , &MetadataDescriptor::SetDeveloper           , false, false),
+        MetadataFieldDescriptor("publisher"  , "unknown" , _("Publisher")   , _("enter game publisher")        , (int)offsetof(MetadataDescriptor, _Publisher)  , MetadataFieldDescriptor::DataType::String , &MetadataDescriptor::IsDefaultPublisher      , &MetadataDescriptor::PublisherAsString   , &MetadataDescriptor::SetPublisher           , false, false),
+        MetadataFieldDescriptor("genre"      , "unknown" , _("Genre")       , _("enter game genre")            , (int)offsetof(MetadataDescriptor, _Genre)      , MetadataFieldDescriptor::DataType::String , &MetadataDescriptor::IsDefaultGenre          , &MetadataDescriptor::GenreAsString       , &MetadataDescriptor::SetGenre               , false, false),
+        MetadataFieldDescriptor("players"    , "1"       , _("Players")     , _("enter number of players")     , (int)offsetof(MetadataDescriptor, _Players)    , MetadataFieldDescriptor::DataType::Range  , &MetadataDescriptor::IsDefaultPlayerRange    , &MetadataDescriptor::PlayersAsString     , &MetadataDescriptor::SetPlayersAsString     , false, false),
+        MetadataFieldDescriptor("region"     , ""        , _("Region")      , _("enter region")                , (int)offsetof(MetadataDescriptor, _Region)     , MetadataFieldDescriptor::DataType::PString, &MetadataDescriptor::IsDefaultRegion         , &MetadataDescriptor::RegionAsString      , &MetadataDescriptor::SetRegion              , false, false),
+      //MetadataFieldDescriptor("romtype"    , "Original", _("Romtype")     , _("enter romtype")               , (int)offsetof(MetadataDescriptor, _RomType)    , MetadataFieldDescriptor::DataType::String , &MetadataDescriptor::IsDefaultRomType        , &MetadataDescriptor::RomTypeAsString     , &MetadataDescriptor::SetRomType             , false, false),
+        MetadataFieldDescriptor("playcount"  , "0"       , _("Play count")  , _("enter number of times played"), (int)offsetof(MetadataDescriptor, _Playcount)  , MetadataFieldDescriptor::DataType::Int    , &MetadataDescriptor::IsDefaultPlayCount      , &MetadataDescriptor::PlayCountAsString   , &MetadataDescriptor::SetPlayCountAsString   , true , false),
+        MetadataFieldDescriptor("lastplayed" , ""        , _("Last played") , _("enter last played date")      , (int)offsetof(MetadataDescriptor, _LastPlayed) , MetadataFieldDescriptor::DataType::Date   , &MetadataDescriptor::IsDefaultLastPlayedEpoc , &MetadataDescriptor::LastPlayedAsString  , &MetadataDescriptor::SetLastPlayedAsString  , true , false),
+        MetadataFieldDescriptor("hash"       , ""        , _("Rom Crc32")   , _("enter rom crc32")             , (int)offsetof(MetadataDescriptor, _RomCrc32)   , MetadataFieldDescriptor::DataType::Crc32  , &MetadataDescriptor::IsDefaultRomCrc32       , &MetadataDescriptor::RomCrc32AsString    , &MetadataDescriptor::SetRomCrc32AsString    , true , false),
       };
 
       count = sizeof(_GameMetadataDescriptors) / sizeof(MetadataFieldDescriptor);
@@ -99,15 +106,41 @@ std::string MetadataDescriptor::FloatToString(float value, int precision)
 
 std::string MetadataDescriptor::IntToRange(int range)
 {
-  std::string value = std::to_string(range >> 16);
-  value += '-';
-  value += std::to_string(range & 0xFFFF);
+  int max = range >> 16;
+  int min = range & 0xFFFF;
+
+  // min = max, only one number
+  if (min == max) return std::to_string(max);
+
+  std::string value = std::to_string(max);
+
+  // min or more range
+  if (min == 0xFFFF)
+  {
+    value += '+';
+  }
+  else
+  {
+    // Full range
+    value += '-';
+    value += std::to_string(min);
+  }
   return std::move(value);
 }
 
 bool MetadataDescriptor::RangeToInt(const std::string& range, int& to)
 {
-  int p = (int)range.find('-');
+  // max+ (min+)
+  int p = (int)range.find('+');
+  if (p != (int)std::string::npos)
+  {
+    if (!StringToInt(range, p, 0, '+')) return false;
+    to = (p << 16) + 0xFFFF;
+    return true;
+  }
+
+  // max-max
+  p = (int)range.find('-');
   if (p == (int)std::string::npos)
   {
     if (!StringToInt(range, p)) return false;
@@ -115,8 +148,9 @@ bool MetadataDescriptor::RangeToInt(const std::string& range, int& to)
     return true;
   }
 
+  // min-max
   int min; if (!StringToInt(range, min, 0, '-')) return false;
-  int max; if (!StringToInt(range, max, p, 0  )) return false;
+  int max; if (!StringToInt(range, max, p + 1, 0  )) return false;
   if (min > max) { min = min ^ max; max = max ^ min; min = min ^ max; }
   to = (max << 16) + min;
   return true;
@@ -215,9 +249,20 @@ bool MetadataDescriptor::StringToFloat(const std::string& from, float& to)
 
 bool MetadataDescriptor::Deserialize(const TreeNode& from, const std::string& relativeTo)
 {
+  #ifdef _METADATA_STATS_
+    if (_Type == ObjectType::None) LivingNone--;
+    if (_Type == ObjectType::Game) LivingGames--;
+    if (_Type == ObjectType::Folder) LivingFolders--;
+  #endif
+
   if (from.first == GameNodeIdentifier) _Type = ObjectType::Game;
   else if (from.first == FolderNodeIdentifier) _Type = ObjectType::Folder;
   else return false; // Unidentified node
+
+  #ifdef _METADATA_STATS_
+    if (_Type == ObjectType::Game) LivingGames++;
+    if (_Type == ObjectType::Folder) LivingFolders++;
+  #endif
 
   int count = 0;
   const MetadataFieldDescriptor* fields = GetMetadataFieldDescriptors(_Type, count);
@@ -244,9 +289,15 @@ bool MetadataDescriptor::Deserialize(const TreeNode& from, const std::string& re
     // but we want to do more control that simple assignations
     switch(field.Type())
     {
+      case MetadataFieldDescriptor::DataType::PString:
+      case MetadataFieldDescriptor::DataType::PPath:
+      case MetadataFieldDescriptor::DataType::PList:
+      {
+        AssignPString(*((std::string**)target), value);
+        break;
+      }
       case MetadataFieldDescriptor::DataType::String:
       case MetadataFieldDescriptor::DataType::Text:
-      case MetadataFieldDescriptor::DataType::List:
       {
         *((std::string*)target) = value;
         break;
@@ -304,7 +355,10 @@ bool MetadataDescriptor::Deserialize(const TreeNode& from, const std::string& re
       case MetadataFieldDescriptor::DataType::Crc32:
       {
         int intValue = 0;
-        if (!HexToInt(value, intValue)) { LOG(LogWarning) << "Invalid CRC32 " << value; }
+        if (!HexToInt(value, intValue))
+        {
+          LOG(LogWarning) << "Invalid CRC32 " << value;
+        }
         *((int*)target) = intValue;
         break;
       }
@@ -350,9 +404,15 @@ MetadataDescriptor::TreeNode MetadataDescriptor::Serialize(const std::string& re
     {
       case MetadataFieldDescriptor::DataType::String:break;
       case MetadataFieldDescriptor::DataType::Text:
-      case MetadataFieldDescriptor::DataType::List:
       {
         tree.add(field.Key(), *((std::string*)source));
+        break;
+      }
+      case MetadataFieldDescriptor::DataType::PString:
+      case MetadataFieldDescriptor::DataType::PList:
+      case MetadataFieldDescriptor::DataType::PPath:
+      {
+        tree.add(field.Key(), ReadPString(*((std::string**)source)));
         break;
       }
       case MetadataFieldDescriptor::DataType::Path:
@@ -423,10 +483,16 @@ void MetadataDescriptor::Merge(const MetadataDescriptor& sourceMetadata)
     {
       case MetadataFieldDescriptor::DataType::String:break;
       case MetadataFieldDescriptor::DataType::Text:
-      case MetadataFieldDescriptor::DataType::List:
       case MetadataFieldDescriptor::DataType::Path:
       {
         *((std::string*)destination) = *((std::string*)source);
+        break;
+      }
+      case MetadataFieldDescriptor::DataType::PList:
+      case MetadataFieldDescriptor::DataType::PPath:
+      case MetadataFieldDescriptor::DataType::PString:
+      {
+        *((std::string**)destination) = *((std::string**)source);
         break;
       }
       case MetadataFieldDescriptor::DataType::Date:
@@ -454,4 +520,47 @@ void MetadataDescriptor::Merge(const MetadataDescriptor& sourceMetadata)
     // A field has been copied. Set the dirty flag
     _Dirty = true;
   }
+}
+
+void MetadataDescriptor::FreeAll()
+{
+  #ifdef _METADATA_STATS_
+  LivingClasses--;
+  if (_Type == ObjectType::None) LivingNone--;
+  if (_Type == ObjectType::Game) LivingGames--;
+  if (_Type == ObjectType::Folder) LivingFolders--;
+  #endif
+
+  int count = 0;
+  const MetadataFieldDescriptor* fields = GetMetadataFieldDescriptors(_Type, count);
+
+  for(; --count >= 0; )
+  {
+    // Get field descriptor
+    const MetadataFieldDescriptor& field = fields[count];
+
+    // Get neutral source
+    void* source = ((unsigned char*)this) + field.Offset();
+
+    // Convert & store
+    switch(field.Type())
+    {
+      case MetadataFieldDescriptor::DataType::PList:
+      case MetadataFieldDescriptor::DataType::PPath:
+      case MetadataFieldDescriptor::DataType::PString:
+      {
+        FreePString(*((std::string**)source));
+        break;
+      }
+      default: break;
+    }
+
+    // A field has been copied. Set the dirty flag
+    _Dirty = true;
+  }
+}
+
+MetadataDescriptor::~MetadataDescriptor()
+{
+  FreeAll();
 }

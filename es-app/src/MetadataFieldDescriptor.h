@@ -17,18 +17,22 @@ class MetadataFieldDescriptor
     //! Data type
     enum class DataType
     {
-        String, //!< std::string
-        Int,    //!< int
-        Bool,   //!< bool
-        Float,  //!< float
+        // Simple types
+        String,  //!< std::string
+        PString, //!< Pointer to std::string
+        Int,     //!< int
+        Bool,    //!< bool
+        Float,   //!< float
 
-        Text,   //!< Multiline text (string)
-        List,   //!< String list, space separated
-        Path,   //!< File path (string)
-        Rating, //!< Floating point value between 0.0 and 1.0 (float)
-        Date,   //!< Epoc (int)
-        Range,  //!< Integer range: LSW:from MSW:to
-        Crc32,  //!< 4byte hash (int)
+        // Derived types
+        Text,    //!< Multiline text (std::string)
+        PList,   //!< Pointer to String list, space separated (std::string)
+        Path,    //!< File path (std::string)
+        PPath,   //!< Pointer to File path (std::string)
+        Rating,  //!< Floating point value between 0.0 and 1.0 (float)
+        Date,    //!< Epoc (int)
+        Range,   //!< Integer range: LSW:from MSW:to
+        Crc32,   //!< 4byte hash (int)
     };
 
   private:
