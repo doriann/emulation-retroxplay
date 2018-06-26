@@ -614,7 +614,9 @@ void SystemData::loadTheme()
     } catch(ThemeException& e)
     {
         LOG(LogError) << e.what();
-        mTheme = std::make_shared<ThemeData>(); // reset to empty
+	    mThemeFolder = "default";
+	    mTheme->loadFile(getThemeFolder(), path);
+        mHasFavorites = mTheme->getHasFavoritesInTheme();
     }
 }
 
