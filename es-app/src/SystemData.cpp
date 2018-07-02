@@ -573,8 +573,16 @@ std::string SystemData::getThemePath() const
     
     // not system theme, try default system theme in theme set
     localThemePath = localThemePath.parent_path().parent_path() / "theme.xml";
-    
-    return localThemePath.generic_string();
+
+	if (fs::exists(localThemePath))
+		return localThemePath.generic_string();
+
+	//none of the above, try default
+	localThemePath = localThemePath.parent_path() / "default/theme.xml";
+
+	if (fs::exists(localThemePath))
+		return localThemePath.generic_string();
+
 }
 
 bool SystemData::hasGamelist() const
