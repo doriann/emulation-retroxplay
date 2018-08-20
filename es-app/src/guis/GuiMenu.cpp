@@ -77,12 +77,6 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, _("MAIN M
 						 [this] { menuSystem(); }, mMenuTheme->menuIconSet.system);
     }
 
-	//UPDATES
-    if (!bartop) {
-        addEntryWithHelp(_("UPDATES").c_str(), _(MenuMessages::UPDATE_HELP_MSG), mMenuTheme->menuText.color, true,
-						 [this] { menuUpdates(); }, mMenuTheme->menuIconSet.updates);
-    }
-
     //GAME SETTINGS
     addEntryWithHelp(_("GAMES SETTINGS").c_str(), _(MenuMessages::GAME_SETTINGS_HELP_MSG), mMenuTheme->menuText.color, true,
 					 [this] { menuGameSettings(); }, mMenuTheme->menuIconSet.games);
